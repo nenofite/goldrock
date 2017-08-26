@@ -9,6 +9,9 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ShootDeerState extends AbstractAppState
 {
     public static final String SHOOT_MAPPING = "Shoot Deer";
@@ -21,10 +24,8 @@ public class ShootDeerState extends AbstractAppState
     private static final int MAX_DEER_SPAWN_RATE = 3;
     private Main app;
     private Node node;
-
     private AudioNode gunshot;
     private AudioNode gunReload;
-
     private float until_next_deer = 0.0f;
     private int maxBullets = 3;
     private int bullets;
@@ -33,6 +34,7 @@ public class ShootDeerState extends AbstractAppState
      * The timestamp when we started reloading, or -1 if we're not reloading
      */
     private long startedReloading;
+    private List<DeerLane> lanes;
 
     public ShootDeerState()
     {
@@ -66,6 +68,12 @@ public class ShootDeerState extends AbstractAppState
         this.app.getGuiNode().attachChild(node);
 
         until_next_deer = (float) (Math.random() * MAX_DEER_SPAWN_RATE);
+
+        lanes = new ArrayList<>();
+        lanes.add(new DeerLane(0.1f, DeerLane.Orientation.LEFT_FACING, 5f, 15f, 30f, 40f, 50f));
+        lanes.add(new DeerLane(0.25f, DeerLane.Orientation.RIGHT_FACING, 1f, 7f, 14f, 21f, 28f, 35f, 42f, 49f, 52f));
+        lanes.add(new DeerLane(0.6f, DeerLane.Orientation.LEFT_FACING, 3f, 5f, 50f));
+        lanes.add(new DeerLane(0.8f, DeerLane.Orientation.RIGHT_FACING, 3f, 5f, 50f));
     }
 
     @Override
@@ -83,21 +91,20 @@ public class ShootDeerState extends AbstractAppState
         super.update(tpf);
         app.getInputManager().setCursorVisible(false);
 
-        until_next_deer -= tpf;
-        if (until_next_deer <= 0)
+        for (DeerLane lane : lanes)
         {
-            boolean onRight = Math.random() < 0.5;
-            float rand = (float) Math.random();
-            Node deerNode = DeerControl.createDeer(app, onRight);
-            if (onRight)
+            lane.update(tpf);
+            if (lane.shouldSpawn())
             {
-                deerNode.move(app.getCamera().getWidth(), (app.getCamera().getHeight() - DeerControl.HEIGHT) * rand, 0);
-            } else
-            {
-                deerNode.move(0, (app.getCamera().getHeight() - DeerControl.HEIGHT) * rand, 0);
+                float vertOffset = lane.getVerticalOffset(app.getCamera().getHeight());
+                Node deer = DeerControl.createDeer(app, lane.getFacingLeft());
+                deer.move(0, vertOffset, 0);
+                if (lane.getFacingLeft())
+                {
+                    deer.move(app.getCamera().getWidth(), 0, 0);
+                }
+                node.attachChild(deer);
             }
-            node.attachChild(deerNode);
-            until_next_deer = (float) (Math.random() * MAX_DEER_SPAWN_RATE);
         }
 
         if (startedReloading != -1 && System.currentTimeMillis() - startedReloading >= RELOAD_TIME)
@@ -196,13 +203,12 @@ public class ShootDeerState extends AbstractAppState
     private Spatial makeBackground()
     {
         Picture bg = new Picture("Background");
-        bg.setImage(app.getAssetManager(), "Sprites/background.png", true);
+        bg.setImage(app.getAssetManager(), "Sprites/DeerPaths.jpg", true);
         bg.setWidth(app.getCamera().getWidth());
         bg.setHeight(app.getCamera().getHeight());
         bg.setLocalTranslation(0, 0, Z_BACKGROUND);
         return bg;
     }
-
 
     /**
      * Set up all the audio nodes

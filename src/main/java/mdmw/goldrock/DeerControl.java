@@ -41,9 +41,9 @@ public class DeerControl extends AbstractControl
         this.imgHandle = imgHandle;
         this.app = app;
         deerSpeed = (float) (Math.random() * (DEER_MOVEMENT_MAX - DEER_MOVEMENT_MIN)) + DEER_MOVEMENT_MIN;
-        state = DeerState.WALKING;
+        state = DeerState.JUMPING;
         flipped = facingLeft;
-        currentAnimation = createWalkingAnimation();
+        currentAnimation = createJumpingAnimation();
     }
 
     /**
