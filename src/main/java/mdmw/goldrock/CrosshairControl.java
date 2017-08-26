@@ -18,6 +18,8 @@ public class CrosshairControl extends AbstractControl
     private static final float WIDTH = 50;
     private static final float HEIGHT = 50;
 
+    private static final float SPEED = 1500;
+
     private Application app;
 
     /**
@@ -39,7 +41,8 @@ public class CrosshairControl extends AbstractControl
         return result;
     }
 
-    private CrosshairControl(Application app) {
+    private CrosshairControl(Application app)
+    {
         this.app = app;
     }
 
@@ -50,15 +53,15 @@ public class CrosshairControl extends AbstractControl
         Vector2f cursor = app.getInputManager().getCursorPosition();
         Vector3f target = new Vector3f(cursor.getX() - WIDTH / 2, cursor.getY() - HEIGHT / 2, 0f);
 
-        System.err.println("Cursor: " + cursor);
-        System.err.println("Me: " + getSpatial().getLocalTranslation());
-
         // Move crosshair towards mouse
-//        Vector3f delta = getSpatial().getLocalTranslation().subtract(target).mult(0.05f * tpf);
-        Vector3f delta = target.subtract(getSpatial().getLocalTranslation()).mult(2f * tpf);
-//        new Vector3f(getSpatial().getLocalTranslation()).interpolateLocal(target, 0.005f * tpf);
-//        getSpatial().setLocalTranslation(delta);
-        getSpatial().move(delta);
+        Vector3f delta = target.subtract(getSpatial().getLocalTranslation());
+        if (delta.length() <= SPEED * tpf)
+        {
+            getSpatial().setLocalTranslation(target);
+        } else
+        {
+            getSpatial().move(delta.normalize().mult(SPEED * tpf));
+        }
     }
 
     @Override

@@ -48,6 +48,13 @@ public class ShootDeerState extends AbstractAppState
     }
 
 
+    @Override
+    public void update(float tpf)
+    {
+        super.update(tpf);
+        app.getInputManager().setCursorVisible(false);
+    }
+
     /**
      * Called on initialization and when set to enabled
      */
