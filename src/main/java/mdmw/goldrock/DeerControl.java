@@ -24,16 +24,17 @@ public class DeerControl extends AbstractControl
     private static final String IMG_JUMPING = "Sprites/hopping_deer.png";
     private static final String IMG_EATING = "Sprites/eating_deer.png";
     private static final String IMG_DEAD = "Sprites/dead_deer.png";
+
+    private Main app;
     private Picture imgHandle;
-    private AssetManager assetManager;
     private float accrue = 0.0f;
     private float deerSpeed = 0.0f;
     private DeerState state;
 
-    private DeerControl(AssetManager assets, Picture imgHandle)
+    private DeerControl(Main app, Picture imgHandle)
     {
         this.imgHandle = imgHandle;
-        this.assetManager = assets;
+        this.app = app;
         deerSpeed = (float) (Math.random() * (DEER_MOVEMENT_MAX - DEER_MOVEMENT_MIN)) + DEER_MOVEMENT_MIN;
         state = DeerState.WALKING;
     }
@@ -44,15 +45,15 @@ public class DeerControl extends AbstractControl
      *
      * @return A deer.
      */
-    public static Node createDeer(AssetManager assetManager)
+    public static Node createDeer(Main app)
     {
         Picture deer = new Picture("Deer");
-        deer.setImage(assetManager, "Sprites/deer.png", true);
+        deer.setImage(app.getAssetManager(), "Sprites/deer.png", true);
         deer.setWidth(WIDTH);
         deer.setHeight(HEIGHT);
 
         Node commanderNode = new Node("Deer Commander");
-        commanderNode.addControl(new DeerControl(assetManager, deer));
+        commanderNode.addControl(new DeerControl(app, deer));
         commanderNode.setLocalTranslation(0, 0, ShootDeerState.Z_FOREGROUND);
         commanderNode.attachChild(deer);
         return commanderNode;
@@ -103,19 +104,19 @@ public class DeerControl extends AbstractControl
         switch (state)
         {
             case DYING:
-                imgHandle.setImage(assetManager, "Sprites/dead_deer.png", true);
+                imgHandle.setImage(app.getAssetManager(), "Sprites/dead_deer.png", true);
                 getSpatial().move(new Vector3f(0, -DEER_DYING_SPEED * tpf, 0));
                 break;
             case WALKING:
-                imgHandle.setImage(assetManager, IMG_WALKING, true);
+                imgHandle.setImage(app.getAssetManager(), IMG_WALKING, true);
                 getSpatial().move(new Vector3f(-deerSpeed * tpf, 0, 0));
                 break;
             case JUMPING:
-                imgHandle.setImage(assetManager, IMG_JUMPING, true);
+                imgHandle.setImage(app.getAssetManager(), IMG_JUMPING, true);
                 getSpatial().move(new Vector3f(-deerSpeed * tpf * DEER_MOVEMENT_JUMP_MODIFIER, 0, 0));
                 break;
             case EATING:
-                imgHandle.setImage(assetManager, IMG_EATING, true);
+                imgHandle.setImage(app.getAssetManager(), IMG_EATING, true);
                 break;
         }
     }
@@ -130,7 +131,11 @@ public class DeerControl extends AbstractControl
      */
     public void shoot()
     {
-        state = DeerState.DYING;
+        if (!state.equals(DeerState.DYING))
+        {
+            state = DeerState.DYING;
+            app.getStateManager().getState(ShootDeerState.class).onKillDeer();
+        }
     }
 
     enum DeerState

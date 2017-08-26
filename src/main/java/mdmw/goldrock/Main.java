@@ -1,6 +1,7 @@
 package mdmw.goldrock;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.font.BitmapFont;
 import com.jme3.system.AppSettings;
 
 public class Main extends SimpleApplication {
@@ -28,5 +29,11 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         super.simpleUpdate(tpf);
+    }
+
+
+    public BitmapFont getGuiFont()
+    {
+        return guiFont;
     }
 }

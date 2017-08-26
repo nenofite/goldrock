@@ -17,9 +17,12 @@ public class ShootDeerState extends AbstractAppState
     public final static int Z_BACKGROUND = -10;
     public static final int Z_FOREGROUND = -5;
     private static final int MAX_DEER_SPAWN_RATE = 10;
+
     private Main app;
     private Node node;
     private float until_next_deer = 0.0f;
+
+    private int killCount;
 
     public ShootDeerState()
     {
@@ -44,6 +47,9 @@ public class ShootDeerState extends AbstractAppState
         app.getInputManager().addMapping(SHOOT_MAPPING,
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT),
                 new KeyTrigger(KeyInput.KEY_SPACE));
+
+        // Add the kill count
+        node.attachChild(KillCountControl.makeKillCount(this.app));
     }
 
     @Override
@@ -76,7 +82,7 @@ public class ShootDeerState extends AbstractAppState
         if (until_next_deer <= 0)
         {
             float rand = (float) Math.random();
-            Node deerNode = DeerControl.createDeer(app.getAssetManager());
+            Node deerNode = DeerControl.createDeer(app);
             deerNode.move(app.getCamera().getWidth(), (app.getCamera().getHeight() - DeerControl.HEIGHT) * rand, 0);
             node.attachChild(deerNode);
             until_next_deer = (float) (Math.random() * MAX_DEER_SPAWN_RATE);
@@ -88,12 +94,18 @@ public class ShootDeerState extends AbstractAppState
      */
     public void onKillDeer()
     {
-        // TODO
+        ++killCount;
     }
 
     public Node getNode()
     {
         return node;
+    }
+
+
+    public int getKillCount()
+    {
+        return killCount;
     }
 
     /**
