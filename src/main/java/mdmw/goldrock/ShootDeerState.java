@@ -77,7 +77,7 @@ public class ShootDeerState extends AbstractAppState
         {
             float rand = (float) Math.random();
             Node deerNode = DeerControl.createDeer(app.getAssetManager());
-            deerNode.move(app.getCamera().getWidth(), app.getCamera().getHeight() * rand, 0);
+            deerNode.move(app.getCamera().getWidth(), (app.getCamera().getHeight() - DeerControl.HEIGHT) * rand, 0);
             node.attachChild(deerNode);
             until_next_deer = (float) (Math.random() * MAX_DEER_SPAWN_RATE);
         }
