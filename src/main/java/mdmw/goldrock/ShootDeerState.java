@@ -12,6 +12,12 @@ public class ShootDeerState extends AbstractAppState
     public static final String SHOOT_MAPPING = "Shoot Deer";
     public final static int Z_BACKGROUND = -10;
     public static final int Z_FOREGROUND = -5;
+
+    /**
+     * The delay it takes to reload, in ms
+     */
+    public static final long RELOAD_TIME = 500;
+
     private static final int MAX_DEER_SPAWN_RATE = 10;
 
     private Main app;
@@ -22,6 +28,11 @@ public class ShootDeerState extends AbstractAppState
     private int bullets;
 
     private int killCount;
+
+    /**
+     * The timestamp when we started reloading, or -1 if we're not reloading
+     */
+    private long startedReloading;
 
     public ShootDeerState()
     {
@@ -78,6 +89,11 @@ public class ShootDeerState extends AbstractAppState
             node.attachChild(deerNode);
             until_next_deer = (float) (Math.random() * MAX_DEER_SPAWN_RATE);
         }
+
+        if (startedReloading != -1 && System.currentTimeMillis() - startedReloading >= RELOAD_TIME)
+        {
+            finishReload();
+        }
     }
 
     /**
@@ -113,11 +129,12 @@ public class ShootDeerState extends AbstractAppState
     /**
      * Whether the player can currently shoot. This means they have a positive number of bullets and are not currently
      * reloading. This is called by CrosshairControl before firing a bullet
+     *
      * @return Whether the player is capable of shooting right now
      */
     public boolean canShoot()
     {
-        return bullets > 0;
+        return bullets > 0 && startedReloading == -1;
     }
 
     /**
@@ -130,6 +147,34 @@ public class ShootDeerState extends AbstractAppState
             --bullets;
 
             System.out.println("POW!");
+        }
+
+        if (bullets == 0)
+        {
+            reload();
+        }
+    }
+
+    /**
+     * Start reloading. This blocks the player from shooting, plays sound, and after a delay restores bullets to max.
+     */
+    public void reload()
+    {
+        if (startedReloading == -1)
+        {
+            startedReloading = System.currentTimeMillis();
+        }
+    }
+
+    /**
+     * Finish the reloading delay, restoring the bullets to max and enabling the player to shoot again
+     */
+    public void finishReload()
+    {
+        if (startedReloading != -1)
+        {
+            startedReloading = -1;
+            bullets = maxBullets;
         }
     }
 
