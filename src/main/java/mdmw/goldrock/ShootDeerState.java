@@ -91,6 +91,11 @@ public class ShootDeerState extends AbstractAppState
         // TODO
     }
 
+    public Node getNode()
+    {
+        return node;
+    }
+
     /**
      * Called on initialization and when set to enabled
      */

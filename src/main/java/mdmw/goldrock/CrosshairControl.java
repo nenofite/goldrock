@@ -1,7 +1,10 @@
 package mdmw.goldrock;
 
 import com.jme3.app.Application;
+import com.jme3.collision.CollisionResult;
+import com.jme3.collision.CollisionResults;
 import com.jme3.input.controls.ActionListener;
+import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -92,8 +95,43 @@ public class CrosshairControl extends AbstractControl implements ActionListener
         if (ShootDeerState.SHOOT_MAPPING.equals(name) && isPressed)
         {
             // Shoot the deer under the cursor
-            // TODO
+            DeerControl deer = pickDeer();
+            if (deer != null)
+            {
+                deer.shoot();
+            }
+
             System.out.println("POW!");
         }
+    }
+
+
+    /**
+     * Get the deer under the crosshair
+     *
+     * @return The deer under the crosshair, or null if there is none
+     */
+    private DeerControl pickDeer()
+    {
+        CollisionResults collisionResults = new CollisionResults();
+
+        Vector3f click3d = getSpatial().getWorldTranslation();
+        Vector3f dir = new Vector3f(0, 0, -1);
+
+        // Aim the ray from the clicked spot forwards.
+        Ray ray = new Ray(click3d, dir);
+
+        app.getStateManager().getState(ShootDeerState.class).getNode().collideWith(ray, collisionResults);
+
+        for (CollisionResult result : collisionResults)
+        {
+            DeerControl deer = Utils.extractControl(result.getGeometry(), DeerControl.class);
+            if (deer != null)
+            {
+                return deer;
+            }
+        }
+
+        return null;
     }
 }
