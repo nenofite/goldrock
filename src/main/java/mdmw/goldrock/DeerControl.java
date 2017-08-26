@@ -32,8 +32,9 @@ public class DeerControl extends AbstractControl
     private AssetManager assetManager;
     private float accrue = 0.0f;
     private float deerSpeed = 0.0f;
+    private boolean dying;
 
-    public DeerControl(AssetManager assets, Picture imgHandle)
+    private DeerControl(AssetManager assets, Picture imgHandle)
     {
         this.imgHandle = imgHandle;
         this.assetManager = assets;
@@ -75,5 +76,10 @@ public class DeerControl extends AbstractControl
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp)
     {
+    }
+
+    public void shoot()
+    {
+        dying = true;
     }
 }
