@@ -20,6 +20,7 @@ public class Main extends SimpleApplication
     public Main()
     {
         AppSettings settings = new AppSettings(true);
+        settings.setSettingsDialogImage("Sprites/title.png");
         settings.setVSync(true);
         settings.setFrameRate(100);
         setSettings(settings);
@@ -34,13 +35,11 @@ public class Main extends SimpleApplication
         // Setup mappings
 
         // Map click or spacebar to start or go to next screen (eg. after newspaper)
-        getInputManager().addMapping(NEXT_SCREEN_MAPPING,
-                new MouseButtonTrigger(MouseInput.BUTTON_LEFT),
+        getInputManager().addMapping(NEXT_SCREEN_MAPPING, new MouseButtonTrigger(MouseInput.BUTTON_LEFT),
                 new KeyTrigger(KeyInput.KEY_SPACE));
 
         // Register the mouse button and the space bar to shoot
-        getInputManager().addMapping(ShootDeerState.SHOOT_MAPPING,
-                new MouseButtonTrigger(MouseInput.BUTTON_LEFT),
+        getInputManager().addMapping(ShootDeerState.SHOOT_MAPPING, new MouseButtonTrigger(MouseInput.BUTTON_LEFT),
                 new KeyTrigger(KeyInput.KEY_SPACE));
 
         stateManager.attach(new TitleState());
@@ -51,7 +50,6 @@ public class Main extends SimpleApplication
     {
         super.simpleUpdate(tpf);
     }
-
 
     public BitmapFont getGuiFont()
     {

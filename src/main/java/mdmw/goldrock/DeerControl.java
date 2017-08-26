@@ -1,12 +1,16 @@
 package mdmw.goldrock;
 
+import com.jme3.material.RenderState;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.ui.Picture;
-import javafx.animation.Animation;
+import javafx.scene.transform.Transform;
 
 /**
  * Defines logic for controlling deer as they frolick about the forest. If you are kind to them, they will ignore you.
@@ -29,13 +33,15 @@ public class DeerControl extends AbstractControl
     private float deerSpeed = 0.0f;
     private DeerState state;
     private AnimationStation currentAnimation;
+    private boolean flipped;
 
-    private DeerControl(Main app, Picture imgHandle)
+    private DeerControl(Main app, Picture imgHandle, boolean facingLeft)
     {
         this.imgHandle = imgHandle;
         this.app = app;
         deerSpeed = (float) (Math.random() * (DEER_MOVEMENT_MAX - DEER_MOVEMENT_MIN)) + DEER_MOVEMENT_MIN;
         state = DeerState.WALKING;
+        flipped = facingLeft;
         currentAnimation = createWalkingAnimation();
     }
 
@@ -45,16 +51,23 @@ public class DeerControl extends AbstractControl
      *
      * @return A deer.
      */
-    public static Node createDeer(Main app)
+    public static Node createDeer(Main app, boolean facingLeft)
     {
-        Picture deer = new Picture("Deer");
+        Node commanderNode = new Node("Deer Commander");
+        Picture deer = new Picture("Regular Deer");
+        commanderNode.addControl(new DeerControl(app, deer, facingLeft));
+        commanderNode.setLocalTranslation(0, 0, ShootDeerState.Z_FOREGROUND);
+
         deer.setImage(app.getAssetManager(), IMG_WALKING, true);
+        deer.getMaterial().getAdditionalRenderState().setFaceCullMode(RenderState.FaceCullMode.Off);
         deer.setWidth(WIDTH);
         deer.setHeight(HEIGHT);
 
-        Node commanderNode = new Node("Deer Commander");
-        commanderNode.addControl(new DeerControl(app, deer));
-        commanderNode.setLocalTranslation(0, 0, ShootDeerState.Z_FOREGROUND);
+        if (facingLeft)
+        {
+            deer.scale(-1, 1, 1);
+        }
+
         commanderNode.attachChild(deer);
         return commanderNode;
     }
@@ -121,6 +134,7 @@ public class DeerControl extends AbstractControl
         }
 
         currentAnimation.progress(tpf);
+        float directionModifier = (flipped) ? -1 : 1;
         switch (state)
         {
             case DYING:
@@ -129,11 +143,12 @@ public class DeerControl extends AbstractControl
                 break;
             case WALKING:
                 imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
-                getSpatial().move(new Vector3f(-deerSpeed * tpf, 0, 0));
+                getSpatial().move(new Vector3f(directionModifier * deerSpeed * tpf, 0, 0));
                 break;
             case JUMPING:
                 imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
-                getSpatial().move(new Vector3f(-deerSpeed * tpf * DEER_MOVEMENT_JUMP_MODIFIER, 0, 0));
+                getSpatial()
+                        .move(new Vector3f(directionModifier * deerSpeed * tpf * DEER_MOVEMENT_JUMP_MODIFIER, 0, 0));
                 break;
             case EATING:
                 imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
@@ -190,9 +205,6 @@ public class DeerControl extends AbstractControl
 
     enum DeerState
     {
-        WALKING,
-        EATING,
-        JUMPING,
-        DYING
+        WALKING, EATING, JUMPING, DYING
     }
 }

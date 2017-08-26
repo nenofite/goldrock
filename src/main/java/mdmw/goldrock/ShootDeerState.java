@@ -14,26 +14,20 @@ public class ShootDeerState extends AbstractAppState
     public static final String SHOOT_MAPPING = "Shoot Deer";
     public final static int Z_BACKGROUND = -10;
     public static final int Z_FOREGROUND = -5;
-
     /**
      * The delay it takes to reload, in ms
      */
     public static final long RELOAD_TIME = 500;
-
-    private static final int MAX_DEER_SPAWN_RATE = 10;
-
+    private static final int MAX_DEER_SPAWN_RATE = 3;
     private Main app;
     private Node node;
 
     private AudioNode gunshot;
 
     private float until_next_deer = 0.0f;
-
     private int maxBullets = 3;
     private int bullets;
-
     private int killCount;
-
     /**
      * The timestamp when we started reloading, or -1 if we're not reloading
      */
@@ -91,9 +85,16 @@ public class ShootDeerState extends AbstractAppState
         until_next_deer -= tpf;
         if (until_next_deer <= 0)
         {
+            boolean onRight = Math.random() < 0.5;
             float rand = (float) Math.random();
-            Node deerNode = DeerControl.createDeer(app);
-            deerNode.move(app.getCamera().getWidth(), (app.getCamera().getHeight() - DeerControl.HEIGHT) * rand, 0);
+            Node deerNode = DeerControl.createDeer(app, onRight);
+            if (onRight)
+            {
+                deerNode.move(app.getCamera().getWidth(), (app.getCamera().getHeight() - DeerControl.HEIGHT) * rand, 0);
+            } else
+            {
+                deerNode.move(0, (app.getCamera().getHeight() - DeerControl.HEIGHT) * rand, 0);
+            }
             node.attachChild(deerNode);
             until_next_deer = (float) (Math.random() * MAX_DEER_SPAWN_RATE);
         }
@@ -117,7 +118,6 @@ public class ShootDeerState extends AbstractAppState
         return node;
     }
 
-
     public int getKillCount()
     {
         return killCount;
@@ -132,7 +132,6 @@ public class ShootDeerState extends AbstractAppState
     {
         return bullets;
     }
-
 
     /**
      * Whether the player can currently shoot. This means they have a positive number of bullets and are not currently
