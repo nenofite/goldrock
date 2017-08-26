@@ -11,14 +11,16 @@ import com.jme3.ui.Picture;
 /**
  * Make the crosshair follow the mouse cursor. On click, send a shoot event.
  */
-public class CrosshairControl extends AbstractControl {
+public class CrosshairControl extends AbstractControl
+{
 
     /**
      * Make a crosshair sprite and attach a new control to it.
      *
      * @return A new crosshair with a controller on it
      */
-    public static Spatial makeCrosshair(Application app) {
+    public static Spatial makeCrosshair(Application app)
+    {
 
         Picture crosshair = new Picture("Arrow");
         crosshair.setImage(app.getAssetManager(), "Sprites/crosshairs.png", true);
@@ -32,12 +34,14 @@ public class CrosshairControl extends AbstractControl {
     }
 
     @Override
-    protected void controlUpdate(float tpf) {
+    protected void controlUpdate(float tpf)
+    {
 
     }
 
     @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
+    protected void controlRender(RenderManager rm, ViewPort vp)
+    {
 
     }
 }
