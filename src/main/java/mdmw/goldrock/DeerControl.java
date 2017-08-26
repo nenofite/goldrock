@@ -1,12 +1,12 @@
 package mdmw.goldrock;
 
-import com.jme3.asset.AssetManager;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.ui.Picture;
+import javafx.animation.Animation;
 
 /**
  * Defines logic for controlling deer as they frolick about the forest. If you are kind to them, they will ignore you.
@@ -18,18 +18,17 @@ public class DeerControl extends AbstractControl
     private static final int ACCRUE_THRESHOLD = 1;
     private static final int DEER_MOVEMENT_MAX = 30;
     private static final int DEER_MOVEMENT_MIN = 20;
-    private static final float DEER_MOVEMENT_JUMP_MODIFIER = 1.5f;
+    private static final float DEER_MOVEMENT_JUMP_MODIFIER = 5f;
     private static final int DEER_DYING_SPEED = 5;
     private static final String IMG_WALKING = "Sprites/deer.png";
-    private static final String IMG_JUMPING = "Sprites/hopping_deer.png";
     private static final String IMG_EATING = "Sprites/eating_deer.png";
     private static final String IMG_DEAD = "Sprites/dead_deer.png";
-
     private Main app;
     private Picture imgHandle;
     private float accrue = 0.0f;
     private float deerSpeed = 0.0f;
     private DeerState state;
+    private AnimationStation currentAnimation;
 
     private DeerControl(Main app, Picture imgHandle)
     {
@@ -37,6 +36,7 @@ public class DeerControl extends AbstractControl
         this.app = app;
         deerSpeed = (float) (Math.random() * (DEER_MOVEMENT_MAX - DEER_MOVEMENT_MIN)) + DEER_MOVEMENT_MIN;
         state = DeerState.WALKING;
+        currentAnimation = createWalkingAnimation();
     }
 
     /**
@@ -48,7 +48,7 @@ public class DeerControl extends AbstractControl
     public static Node createDeer(Main app)
     {
         Picture deer = new Picture("Deer");
-        deer.setImage(app.getAssetManager(), "Sprites/deer.png", true);
+        deer.setImage(app.getAssetManager(), IMG_WALKING, true);
         deer.setWidth(WIDTH);
         deer.setHeight(HEIGHT);
 
@@ -97,28 +97,77 @@ public class DeerControl extends AbstractControl
         accrue += tpf;
         if (accrue >= ACCRUE_THRESHOLD)
         {
-            state = transitionState(state);
+            DeerState nextState = transitionState(state);
+            if (state != nextState)
+            {
+                switch (nextState)
+                {
+                    case JUMPING:
+                        currentAnimation = createJumpingAnimation();
+                        break;
+                    case WALKING:
+                        currentAnimation = createWalkingAnimation();
+                        break;
+                    case DYING:
+                        currentAnimation = createDyingAnimation();
+                        break;
+                    case EATING:
+                        currentAnimation = createEatingAnimation();
+                        break;
+                }
+            }
+            state = nextState;
             accrue = 0;
         }
 
+        currentAnimation.progress(tpf);
         switch (state)
         {
             case DYING:
-                imgHandle.setImage(app.getAssetManager(), "Sprites/dead_deer.png", true);
+                imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
                 getSpatial().move(new Vector3f(0, -DEER_DYING_SPEED * tpf, 0));
                 break;
             case WALKING:
-                imgHandle.setImage(app.getAssetManager(), IMG_WALKING, true);
+                imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
                 getSpatial().move(new Vector3f(-deerSpeed * tpf, 0, 0));
                 break;
             case JUMPING:
-                imgHandle.setImage(app.getAssetManager(), IMG_JUMPING, true);
+                imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
                 getSpatial().move(new Vector3f(-deerSpeed * tpf * DEER_MOVEMENT_JUMP_MODIFIER, 0, 0));
                 break;
             case EATING:
-                imgHandle.setImage(app.getAssetManager(), IMG_EATING, true);
+                imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
                 break;
         }
+    }
+
+    private AnimationStation createJumpingAnimation()
+    {
+        AnimationStation stat = new AnimationStation();
+        stat.addImage("Sprites/running_deer_0.png", 0.2f);
+        stat.addImage("Sprites/running_deer_1.png", 0.4f);
+        return stat;
+    }
+
+    private AnimationStation createWalkingAnimation()
+    {
+        AnimationStation stat = new AnimationStation();
+        stat.addImage(IMG_WALKING, 1.0f);
+        return stat;
+    }
+
+    private AnimationStation createDyingAnimation()
+    {
+        AnimationStation stat = new AnimationStation();
+        stat.addImage(IMG_DEAD, 1.0f);
+        return stat;
+    }
+
+    private AnimationStation createEatingAnimation()
+    {
+        AnimationStation stat = new AnimationStation();
+        stat.addImage(IMG_EATING, 1.0f);
+        return stat;
     }
 
     @Override
