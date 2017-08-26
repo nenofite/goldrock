@@ -3,6 +3,8 @@ package mdmw.goldrock;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.audio.AudioData;
+import com.jme3.audio.AudioNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
@@ -22,6 +24,9 @@ public class ShootDeerState extends AbstractAppState
 
     private Main app;
     private Node node;
+
+    private AudioNode gunshot;
+
     private float until_next_deer = 0.0f;
 
     private int maxBullets = 3;
@@ -58,6 +63,9 @@ public class ShootDeerState extends AbstractAppState
 
         // Add the bullets
         node.attachChild(BulletsControl.makeBullets(this.app));
+
+        // Load the audio
+        initAudio();
 
         // Attach our node
         this.app.getGuiNode().attachChild(node);
@@ -146,6 +154,7 @@ public class ShootDeerState extends AbstractAppState
         {
             --bullets;
 
+            gunshot.playInstance();
             System.out.println("POW!");
         }
 
@@ -191,5 +200,17 @@ public class ShootDeerState extends AbstractAppState
         bg.setHeight(app.getCamera().getHeight());
         bg.setLocalTranslation(0, 0, Z_BACKGROUND);
         return bg;
+    }
+
+
+    /**
+     * Set up all the audio nodes
+     */
+    private void initAudio()
+    {
+        gunshot = new AudioNode(app.getAssetManager(), "Audio/gunshot.ogg", AudioData.DataType.Buffer);
+        gunshot.setPositional(false);
+        gunshot.setVolume(2);
+        node.attachChild(gunshot);
     }
 }
