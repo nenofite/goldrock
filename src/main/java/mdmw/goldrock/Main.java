@@ -23,7 +23,10 @@ public class Main extends SimpleApplication
         settings.setSettingsDialogImage("Sprites/title.png");
         settings.setVSync(true);
         settings.setFrameRate(100);
+        settings.setResolution(800, 800);
         setSettings(settings);
+        setShowSettings(false);
+        setDisplayFps(false);
     }
 
     @Override
