@@ -3,6 +3,8 @@ package mdmw.goldrock;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.audio.AudioData;
+import com.jme3.audio.AudioNode;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -15,6 +17,7 @@ public class TitleState extends AbstractAppState implements ActionListener
 {
     private Main app;
     private Node node;
+    private AudioNode music;
 
     public TitleState()
     {
@@ -35,6 +38,13 @@ public class TitleState extends AbstractAppState implements ActionListener
 
         // Attach our node
         this.app.getGuiNode().attachChild(node);
+
+        // Make the music node
+        music = new AudioNode(app.getAssetManager(), "Audio/victory_music.wav", AudioData.DataType.Stream);
+        music.setLooping(true);
+        music.setPositional(false);
+        node.attachChild(music);
+        music.play();
     }
 
     @Override
@@ -44,6 +54,8 @@ public class TitleState extends AbstractAppState implements ActionListener
 
         // Deregister our listener
         app.getInputManager().removeListener(this);
+
+        music.stop();
 
         // Detach our node
         node.removeFromParent();
