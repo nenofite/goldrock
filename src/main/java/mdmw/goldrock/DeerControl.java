@@ -22,8 +22,8 @@ public class DeerControl extends AbstractControl
     private static final int ACCRUE_THRESHOLD = 1;
     private static final int DEER_MOVEMENT_MAX = 30;
     private static final int DEER_MOVEMENT_MIN = 20;
-    private static final float DEER_MOVEMENT_JUMP_MODIFIER = 5f;
-    private static final int DEER_DYING_SPEED = 5;
+    private static final float DEER_MOVEMENT_JUMP_MODIFIER = 7f;
+    private static final int DEER_DYING_SPEED = 60;
     private static final String IMG_WALKING = "Sprites/deer.png";
     private static final String IMG_EATING = "Sprites/eating_deer.png";
     private static final String IMG_DEAD = "Sprites/dead_deer.png";
@@ -34,6 +34,7 @@ public class DeerControl extends AbstractControl
     private DeerState state;
     private AnimationStation currentAnimation;
     private boolean flipped;
+    private float remainingDeathDistance = HEIGHT + 15;
 
     private DeerControl(Main app, Picture imgHandle, boolean facingLeft)
     {
@@ -139,7 +140,9 @@ public class DeerControl extends AbstractControl
         {
             case DYING:
                 imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
-                getSpatial().move(new Vector3f(0, -DEER_DYING_SPEED * tpf, 0));
+                float speed = Math.min(DEER_DYING_SPEED * tpf, remainingDeathDistance);
+                remainingDeathDistance -= speed;
+                getSpatial().move(new Vector3f(0, -speed, 0));
                 break;
             case WALKING:
                 imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
