@@ -22,8 +22,8 @@ public class Main extends SimpleApplication {
         setDisplayStatView(false);
         flyCam.setEnabled(false);
 
-        ShootDeerState shootDeerState = new ShootDeerState();
-        stateManager.attach(shootDeerState);
+        TitleState titleState = new TitleState();
+        stateManager.attach(titleState);
     }
 
     @Override
