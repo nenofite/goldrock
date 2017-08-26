@@ -3,12 +3,18 @@ package mdmw.goldrock;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
+import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
 
 public class ShootDeerState extends AbstractAppState
 {
+    public static final String SHOOT_MAPPING = "Shoot Deer";
+
     public final static int Z_BACKGROUND = -10;
     public static final int Z_FOREGROUND = 10;
 
@@ -33,6 +39,12 @@ public class ShootDeerState extends AbstractAppState
 
         // Add the background
         node.attachChild(makeBackground());
+
+        // Register the mouse button and the space bar to shoot
+        app.getInputManager().addMapping(SHOOT_MAPPING,
+                new MouseButtonTrigger(MouseInput.BUTTON_LEFT),
+                new KeyTrigger(KeyInput.KEY_SPACE));
+
     }
 
     @Override
@@ -62,6 +74,16 @@ public class ShootDeerState extends AbstractAppState
         super.update(tpf);
         app.getInputManager().setCursorVisible(false);
     }
+
+
+    /**
+     * Called by DeerControl when a deer is killed. This increments the score.
+     */
+    public void onKillDeer()
+    {
+        // TODO
+    }
+
 
     /**
      * Called on initialization and when set to enabled
