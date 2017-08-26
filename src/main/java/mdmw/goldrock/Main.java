@@ -2,15 +2,22 @@ package mdmw.goldrock;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.font.BitmapFont;
+import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
+import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.system.AppSettings;
 
-public class Main extends SimpleApplication {
+public class Main extends SimpleApplication
+{
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         new Main().start();
     }
 
-    public Main() {
+    public Main()
+    {
         AppSettings settings = new AppSettings(true);
         settings.setVSync(true);
         settings.setFrameRate(100);
@@ -18,16 +25,30 @@ public class Main extends SimpleApplication {
     }
 
     @Override
-    public void simpleInitApp() {
+    public void simpleInitApp()
+    {
         setDisplayStatView(false);
         flyCam.setEnabled(false);
+
+        // Setup mappings
+
+        // Map click or spacebar to start
+        getInputManager().addMapping(TitleState.START_GAME_MAPPING,
+                new MouseButtonTrigger(MouseInput.BUTTON_LEFT),
+                new KeyTrigger(KeyInput.KEY_SPACE));
+
+        // Register the mouse button and the space bar to shoot
+        getInputManager().addMapping(ShootDeerState.SHOOT_MAPPING,
+                new MouseButtonTrigger(MouseInput.BUTTON_LEFT),
+                new KeyTrigger(KeyInput.KEY_SPACE));
 
         TitleState titleState = new TitleState();
         stateManager.attach(titleState);
     }
 
     @Override
-    public void simpleUpdate(float tpf) {
+    public void simpleUpdate(float tpf)
+    {
         super.simpleUpdate(tpf);
     }
 

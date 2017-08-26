@@ -3,10 +3,6 @@ package mdmw.goldrock;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
-import com.jme3.input.KeyInput;
-import com.jme3.input.MouseInput;
-import com.jme3.input.controls.KeyTrigger;
-import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
@@ -42,11 +38,6 @@ public class ShootDeerState extends AbstractAppState
 
         // Add the background
         node.attachChild(makeBackground());
-
-        // Register the mouse button and the space bar to shoot
-        app.getInputManager().addMapping(SHOOT_MAPPING,
-                new MouseButtonTrigger(MouseInput.BUTTON_LEFT),
-                new KeyTrigger(KeyInput.KEY_SPACE));
 
         // Add the kill count
         node.attachChild(KillCountControl.makeKillCount(this.app));
