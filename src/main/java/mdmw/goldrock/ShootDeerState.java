@@ -4,10 +4,12 @@ import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import com.jme3.ui.Picture;
 
 public class ShootDeerState extends AbstractAppState
 {
-    public final static int Z_BACKGROUND = 15;
+    public final static int Z_BACKGROUND = -10;
     public static final int Z_FOREGROUND = 10;
 
     private Main app;
@@ -25,6 +27,12 @@ public class ShootDeerState extends AbstractAppState
 
         super.initialize(stateManager, app);
         setup();
+
+        // Make a crosshair
+        node.attachChild(CrosshairControl.makeCrosshair(app));
+
+        // Add the background
+        node.attachChild(makeBackground());
     }
 
     @Override
@@ -62,9 +70,6 @@ public class ShootDeerState extends AbstractAppState
     {
         // Attach our node
         app.getGuiNode().attachChild(node);
-
-        // Make a crosshair
-        node.attachChild(CrosshairControl.makeCrosshair(app));
     }
 
 
@@ -75,5 +80,22 @@ public class ShootDeerState extends AbstractAppState
     {
         // Detach our node
         node.removeFromParent();
+    }
+
+
+    /**
+     * Make the background image
+     *
+     * @return A spatial for the background
+     */
+    private Spatial makeBackground()
+    {
+
+        Picture bg = new Picture("Background");
+        bg.setImage(app.getAssetManager(), "Sprites/background.png", true);
+        bg.setWidth(app.getCamera().getWidth());
+        bg.setHeight(app.getCamera().getHeight());
+        bg.setLocalTranslation(0, 0, Z_BACKGROUND);
+        return bg;
     }
 }
