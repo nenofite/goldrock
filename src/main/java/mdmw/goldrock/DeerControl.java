@@ -184,6 +184,7 @@ public class DeerControl extends AbstractControl
         {
             state = DeerState.DYING;
             app.getStateManager().getState(ShootDeerState.class).onKillDeer();
+            currentAnimation = createDyingAnimation();
         }
     }
 
