@@ -18,49 +18,49 @@ public class ShootDeerState extends AbstractAppState
     private Node node;
     private float until_next_deer = 0.0f;
 
+    private int maxBullets = 3;
+    private int bullets;
+
     private int killCount;
 
     public ShootDeerState()
     {
         node = new Node("ShootDeerState");
+        bullets = maxBullets;
     }
 
     @Override
     public void initialize(AppStateManager stateManager, Application app)
     {
+        super.initialize(stateManager, app);
+
         this.app = (Main) app;
 
-        super.initialize(stateManager, app);
-        setup();
-
         // Make a crosshair
-        node.attachChild(CrosshairControl.makeCrosshair(app));
+        node.attachChild(CrosshairControl.makeCrosshair(this.app));
 
         // Add the background
         node.attachChild(makeBackground());
 
         // Add the kill count
         node.attachChild(KillCountControl.makeKillCount(this.app));
+
+        // Add the bullets
+        node.attachChild(BulletsControl.makeBullets(this.app));
+
+        // Attach our node
+        this.app.getGuiNode().attachChild(node);
+
+        until_next_deer = (float) (Math.random() * MAX_DEER_SPAWN_RATE);
     }
 
     @Override
-    public void setEnabled(boolean enabled)
+    public void cleanup()
     {
-        boolean wasEnabled = isEnabled();
-        super.setEnabled(enabled);
+        super.cleanup();
 
-        if (wasEnabled == enabled)
-        {
-            return;
-        }
-
-        if (enabled)
-        {
-            setup();
-        } else
-        {
-            teardown();
-        }
+        // Detach our node
+        node.removeFromParent();
     }
 
     @Override
@@ -99,24 +99,38 @@ public class ShootDeerState extends AbstractAppState
         return killCount;
     }
 
-    /**
-     * Called on initialization and when set to enabled
-     */
-    private void setup()
+    public int getMaxBullets()
     {
-        // Attach our node
-        app.getGuiNode().attachChild(node);
+        return maxBullets;
+    }
 
-        until_next_deer = (float) (Math.random() * MAX_DEER_SPAWN_RATE);
+    public int getBullets()
+    {
+        return bullets;
+    }
+
+
+    /**
+     * Whether the player can currently shoot. This means they have a positive number of bullets and are not currently
+     * reloading. This is called by CrosshairControl before firing a bullet
+     * @return Whether the player is capable of shooting right now
+     */
+    public boolean canShoot()
+    {
+        return bullets > 0;
     }
 
     /**
-     * Called when being taken down
+     * Decrement the amount of bullets and play a shot sound
      */
-    private void teardown()
+    public void fireBullet()
     {
-        // Detach our node
-        node.removeFromParent();
+        if (bullets > 0)
+        {
+            --bullets;
+
+            System.out.println("POW!");
+        }
     }
 
     /**

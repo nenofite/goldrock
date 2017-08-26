@@ -1,6 +1,5 @@
 package mdmw.goldrock;
 
-import com.jme3.app.Application;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.controls.ActionListener;
@@ -24,14 +23,14 @@ public class CrosshairControl extends AbstractControl implements ActionListener
 
     private static final float SPEED = 1500;
 
-    private Application app;
+    private Main app;
 
     /**
      * Make a crosshair sprite and attach a new control to it.
      *
      * @return A new crosshair with a controller on it
      */
-    public static Spatial makeCrosshair(Application app)
+    public static Spatial makeCrosshair(Main app)
     {
 
         Picture crosshair = new Picture("Arrow");
@@ -46,7 +45,7 @@ public class CrosshairControl extends AbstractControl implements ActionListener
         return result;
     }
 
-    private CrosshairControl(Application app)
+    private CrosshairControl(Main app)
     {
         this.app = app;
     }
@@ -92,16 +91,21 @@ public class CrosshairControl extends AbstractControl implements ActionListener
     @Override
     public void onAction(String name, boolean isPressed, float tpf)
     {
+        ShootDeerState shootDeerState = app.getStateManager().getState(ShootDeerState.class);
+
         if (ShootDeerState.SHOOT_MAPPING.equals(name) && isPressed)
         {
-            // Shoot the deer under the cursor
-            DeerControl deer = pickDeer();
-            if (deer != null)
+            if (shootDeerState.canShoot())
             {
-                deer.shoot();
-            }
+                shootDeerState.fireBullet();
 
-            System.out.println("POW!");
+                // Shoot the deer under the cursor
+                DeerControl deer = pickDeer();
+                if (deer != null)
+                {
+                    deer.shoot();
+                }
+            }
         }
     }
 
