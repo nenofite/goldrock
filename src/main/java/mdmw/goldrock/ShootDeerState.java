@@ -23,6 +23,7 @@ public class ShootDeerState extends AbstractAppState
     private Node node;
 
     private AudioNode gunshot;
+    private AudioNode gunReload;
 
     private float until_next_deer = 0.0f;
     private int maxBullets = 3;
@@ -183,6 +184,7 @@ public class ShootDeerState extends AbstractAppState
         {
             startedReloading = -1;
             bullets = maxBullets;
+            gunReload.playInstance();
         }
     }
 
@@ -207,9 +209,14 @@ public class ShootDeerState extends AbstractAppState
      */
     private void initAudio()
     {
-        gunshot = new AudioNode(app.getAssetManager(), "Audio/gunshot.ogg", AudioData.DataType.Buffer);
+        gunshot = new AudioNode(app.getAssetManager(), "Audio/gunshot.wav", AudioData.DataType.Buffer);
         gunshot.setPositional(false);
         gunshot.setVolume(2);
         node.attachChild(gunshot);
+
+        gunReload = new AudioNode(app.getAssetManager(), "Audio/gun_reload.wav", AudioData.DataType.Buffer);
+        gunReload.setPositional(false);
+        gunReload.setVolume(2);
+        node.attachChild(gunReload);
     }
 }
