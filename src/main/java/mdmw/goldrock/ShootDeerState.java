@@ -99,9 +99,6 @@ public class ShootDeerState extends AbstractAppState
         // Attach our node
         app.getGuiNode().attachChild(node);
 
-        // Make a crosshair
-        node.attachChild(CrosshairControl.makeCrosshair(app));
-
         until_next_deer = (float) (Math.random() * MAX_DEER_SPAWN_RATE);
     }
 
