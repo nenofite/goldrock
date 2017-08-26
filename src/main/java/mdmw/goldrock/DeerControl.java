@@ -28,6 +28,7 @@ public class DeerControl extends AbstractControl
     private static final int ACCRUE_THRESHOLD = 5;
     private static final int DEER_MOVEMENT_MAX = 40;
     private static final int DEER_MOVEMENT_MIN = 25;
+    private static final int DEER_DYING_SPEED = 5;
     private Picture imgHandle;
     private AssetManager assetManager;
     private float accrue = 0.0f;
@@ -64,12 +65,19 @@ public class DeerControl extends AbstractControl
     @Override
     protected void controlUpdate(float tpf)
     {
-        getSpatial().move(new Vector3f(-deerSpeed * tpf, 0, 0));
-        accrue += tpf;
-        if (accrue > ACCRUE_THRESHOLD)
+        if (dying)
         {
-            accrue = 0;
-            imgHandle.setImage(assetManager, "Sprites/hopping_deer.png", true);
+            imgHandle.setImage(assetManager, "Sprites/dead_deer.png", true);
+            getSpatial().move(new Vector3f(0, -DEER_DYING_SPEED * tpf, 0));
+        } else
+        {
+            getSpatial().move(new Vector3f(-deerSpeed * tpf, 0, 0));
+            accrue += tpf;
+            if (accrue > ACCRUE_THRESHOLD)
+            {
+                accrue = 0;
+                imgHandle.setImage(assetManager, "Sprites/hopping_deer.png", true);
+            }
         }
     }
 
