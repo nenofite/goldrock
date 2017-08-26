@@ -14,12 +14,12 @@ import com.jme3.ui.Picture;
 public class ShootDeerState extends AbstractAppState
 {
     public static final String SHOOT_MAPPING = "Shoot Deer";
-
     public final static int Z_BACKGROUND = -10;
-    public static final int Z_FOREGROUND = 10;
-
+    public static final int Z_FOREGROUND = -5;
+    private static final int MAX_DEER_SPAWN_RATE = 10;
     private Main app;
     private Node node;
+    private float until_next_deer = 0.0f;
 
     public ShootDeerState()
     {
@@ -44,7 +44,6 @@ public class ShootDeerState extends AbstractAppState
         app.getInputManager().addMapping(SHOOT_MAPPING,
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT),
                 new KeyTrigger(KeyInput.KEY_SPACE));
-
     }
 
     @Override
@@ -67,14 +66,22 @@ public class ShootDeerState extends AbstractAppState
         }
     }
 
-
     @Override
     public void update(float tpf)
     {
         super.update(tpf);
         app.getInputManager().setCursorVisible(false);
-    }
 
+        until_next_deer -= tpf;
+        if (until_next_deer <= 0)
+        {
+            float rand = (float) Math.random();
+            Node deerNode = DeerControl.createDeer(app.getAssetManager());
+            deerNode.move(app.getCamera().getWidth(), app.getCamera().getHeight() * rand, 0);
+            node.attachChild(deerNode);
+            until_next_deer = (float) (Math.random() * MAX_DEER_SPAWN_RATE);
+        }
+    }
 
     /**
      * Called by DeerControl when a deer is killed. This increments the score.
@@ -84,7 +91,6 @@ public class ShootDeerState extends AbstractAppState
         // TODO
     }
 
-
     /**
      * Called on initialization and when set to enabled
      */
@@ -92,8 +98,12 @@ public class ShootDeerState extends AbstractAppState
     {
         // Attach our node
         app.getGuiNode().attachChild(node);
-    }
 
+        // Make a crosshair
+        node.attachChild(CrosshairControl.makeCrosshair(app));
+
+        until_next_deer = (float) (Math.random() * MAX_DEER_SPAWN_RATE);
+    }
 
     /**
      * Called when being taken down
@@ -104,7 +114,6 @@ public class ShootDeerState extends AbstractAppState
         node.removeFromParent();
     }
 
-
     /**
      * Make the background image
      *
@@ -112,7 +121,6 @@ public class ShootDeerState extends AbstractAppState
      */
     private Spatial makeBackground()
     {
-
         Picture bg = new Picture("Background");
         bg.setImage(app.getAssetManager(), "Sprites/background.png", true);
         bg.setWidth(app.getCamera().getWidth());
