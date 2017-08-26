@@ -10,6 +10,7 @@ import com.jme3.system.AppSettings;
 
 public class Main extends SimpleApplication
 {
+    public static final String NEXT_SCREEN_MAPPING = "Next Screen";
 
     public static void main(String[] args)
     {
@@ -32,8 +33,8 @@ public class Main extends SimpleApplication
 
         // Setup mappings
 
-        // Map click or spacebar to start
-        getInputManager().addMapping(TitleState.START_GAME_MAPPING,
+        // Map click or spacebar to start or go to next screen (eg. after newspaper)
+        getInputManager().addMapping(NEXT_SCREEN_MAPPING,
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT),
                 new KeyTrigger(KeyInput.KEY_SPACE));
 
@@ -42,8 +43,7 @@ public class Main extends SimpleApplication
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT),
                 new KeyTrigger(KeyInput.KEY_SPACE));
 
-        TitleState titleState = new TitleState();
-        stateManager.attach(titleState);
+        stateManager.attach(new TitleState());
     }
 
     @Override

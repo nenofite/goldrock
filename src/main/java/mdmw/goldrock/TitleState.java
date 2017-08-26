@@ -13,8 +13,6 @@ import com.jme3.ui.Picture;
  */
 public class TitleState extends AbstractAppState implements ActionListener
 {
-    public static final String START_GAME_MAPPING = "Start Game";
-
     private Main app;
     private Node node;
 
@@ -33,7 +31,7 @@ public class TitleState extends AbstractAppState implements ActionListener
         node.attachChild(makeTitleBackground());
 
         // Register as a listener
-        app.getInputManager().addListener(this, START_GAME_MAPPING);
+        app.getInputManager().addListener(this, Main.NEXT_SCREEN_MAPPING);
 
         // Attach our node
         this.app.getGuiNode().attachChild(node);
@@ -54,11 +52,11 @@ public class TitleState extends AbstractAppState implements ActionListener
     @Override
     public void onAction(String name, boolean isPressed, float tpf)
     {
-        if (START_GAME_MAPPING.equals(name) && isPressed)
+        if (Main.NEXT_SCREEN_MAPPING.equals(name) && isPressed)
         {
             // Switch to shoot deer state
             app.getStateManager().detach(this);
-            app.getStateManager().attach(new ShootDeerState());
+            app.getStateManager().attach(new NewspaperState());
         }
     }
 
