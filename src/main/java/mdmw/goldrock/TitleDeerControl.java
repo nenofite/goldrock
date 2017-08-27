@@ -9,8 +9,8 @@ import com.jme3.ui.Picture;
 
 public class TitleDeerControl extends AbstractControl
 {
-    private static final float WIDTH = 200;
-    private static final float HEIGHT = 200;
+    private static final float WIDTH = 150;
+    private static final float HEIGHT = 150;
     private Main app;
     private AnimationStation animation;
     private Picture imgHandle;
