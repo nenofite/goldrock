@@ -32,7 +32,7 @@ public class ShootDeerState extends AbstractAppState
     /**
      * The number of deer to kill in order to see the MDMW ending
      */
-    public static final int MDMW_KILL_COUNT = 1000;
+    public static final int MDMW_KILL_COUNT = 10;
     private static final String AUDIO_SLOW = "Audio/hunt_slow.wav";
     private static final String AUDIO_MED = "Audio/hunt_med.wav";
     private static final String AUDIO_FAST = "Audio/hunt_fast.wav";
@@ -127,8 +127,12 @@ public class ShootDeerState extends AbstractAppState
                 music = new AudioNode(app.getAssetManager(), AUDIO_FAST, AudioData.DataType.Stream);
                 prepareThirdHunt();
                 break;
+            case 4:
+                music = new AudioNode(app.getAssetManager(), "Audio/mdmw.wav", AudioData.DataType.Stream);
+                prepareFinalHunt();
+                break;
             default:
-                throw new IllegalStateException("Only three hunts!");
+                throw new IllegalStateException("Too many hunts!");
         }
         music.setLooping(true);
         music.setPositional(false);
@@ -173,6 +177,13 @@ public class ShootDeerState extends AbstractAppState
         // 7 deer
     }
 
+    private void prepareFinalHunt()
+    {
+        ++activeDeer;
+        Spatial s = MdmwControl.createMdmw(app);
+        node.attachChild(s);
+    }
+
     private Spatial makeForeground()
     {
         Picture fg = new Picture("Foreground");
@@ -209,10 +220,10 @@ public class ShootDeerState extends AbstractAppState
             }
         } else
         {
-            if (activeDeer == 0 && lanes.stream().allMatch(e -> !e.hasDeer()))
+            if (activeDeer == 0 && lanes.stream().noneMatch(DeerLane::hasDeer))
             {
                 finishHunt();
-            } else
+            } else if (huntNumber < 4)
             {
                 for (DeerLane lane : lanes)
                 {
@@ -230,12 +241,12 @@ public class ShootDeerState extends AbstractAppState
                         ++activeDeer;
                     }
                 }
-
-                if (startedReloading != -1 && System.currentTimeMillis() - startedReloading >= RELOAD_TIME)
-                {
-                    finishReload();
-                }
             }
+        }
+
+        if (startedReloading != -1 && System.currentTimeMillis() - startedReloading >= RELOAD_TIME)
+        {
+            finishReload();
         }
     }
 
@@ -347,7 +358,6 @@ public class ShootDeerState extends AbstractAppState
         awardTitle();
     }
 
-
     /**
      * Begin the next hunt after finishing a delay
      */
@@ -356,17 +366,9 @@ public class ShootDeerState extends AbstractAppState
         startedWaitForNextHunt = -1;
         removeTitle();
 
-        if (huntNumber == 3)
+        if (huntNumber == 3 && killCount < MDMW_KILL_COUNT)
         {
-            AppState nextState;
-            if (killCount < MDMW_KILL_COUNT)
-            {
-                nextState = new NewspaperState(totalKillCount);
-            } else
-            {
-                nextState = /* TODO MDMW */ null;
-            }
-
+            AppState nextState = new NewspaperState(totalKillCount);
             app.getStateManager().detach(this);
             app.getStateManager().attach(nextState);
         } else
@@ -374,7 +376,6 @@ public class ShootDeerState extends AbstractAppState
             setupHunt(++huntNumber);
         }
     }
-
 
     /**
      * Display some "Title earned" text based on the round and the kill count
@@ -441,7 +442,6 @@ public class ShootDeerState extends AbstractAppState
         node.attachChild(titleEarned);
     }
 
-
     /**
      * Remove the "Title earned" text
      */
@@ -453,7 +453,6 @@ public class ShootDeerState extends AbstractAppState
             titleEarned = null;
         }
     }
-
 
     /**
      * Make the background image
@@ -486,7 +485,6 @@ public class ShootDeerState extends AbstractAppState
         gunReload.setPositional(false);
         node.attachChild(gunReload);
     }
-
 
     /**
      * Make the translucent dark bar that serves as a background for the kill count text
