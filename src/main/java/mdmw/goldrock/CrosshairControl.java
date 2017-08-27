@@ -21,7 +21,7 @@ public class CrosshairControl extends AbstractControl implements ActionListener
     private static final float WIDTH = 50;
     private static final float HEIGHT = 50;
 
-    private static final float SPEED = 1500;
+    private static final float SPEED = 4500;
 
     private Main app;
 
