@@ -213,6 +213,7 @@ public class ShootDeerState extends AbstractAppState
         music.stop();
 
         // Detach our node
+        Utils.detachAllControls(node);
         node.removeFromParent();
     }
 

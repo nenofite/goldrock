@@ -58,6 +58,7 @@ public class TitleState extends AbstractAppState implements ActionListener
         music.stop();
 
         // Detach our node
+        Utils.detachAllControls(node);
         node.removeFromParent();
     }
 

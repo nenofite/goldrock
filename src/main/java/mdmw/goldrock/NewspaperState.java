@@ -51,12 +51,14 @@ public class NewspaperState extends AbstractAppState implements ActionListener
     public void cleanup()
     {
         super.cleanup();
-        node.removeFromParent();
 
         music.stop();
 
         // Remove ourselves as a listener
         app.getInputManager().removeListener(this);
+
+        Utils.detachAllControls(node);
+        node.removeFromParent();
     }
 
     @Override
