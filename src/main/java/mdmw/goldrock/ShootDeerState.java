@@ -100,35 +100,13 @@ public class ShootDeerState extends AbstractAppState
         // Attach our node
         this.app.getGuiNode().attachChild(node);
 
-        started = System.currentTimeMillis();
-
-        String audioSelection;
-        switch (huntNumber)
-        {
-            case 1:
-                audioSelection = AUDIO_SLOW;
-                break;
-            case 2:
-                audioSelection = AUDIO_MED;
-                break;
-            case 3:
-                audioSelection = AUDIO_FAST;
-                break;
-            default:
-                audioSelection = AUDIO_SLOW;
-                break;
-        }
-        music = new AudioNode(app.getAssetManager(), audioSelection, AudioData.DataType.Stream);
-        music.setLooping(true);
-        music.setPositional(false);
-        node.attachChild(music);
-        music.play();
-
-        prepareFirstHunt();
+        setupHunt(huntNumber);
     }
 
     private void setupHunt(int huntNumber)
     {
+        started = System.currentTimeMillis();
+
         if (music != null)
         {
             music.stop();
