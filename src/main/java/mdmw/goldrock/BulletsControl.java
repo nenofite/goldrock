@@ -15,8 +15,8 @@ import java.util.List;
  */
 public class BulletsControl extends AbstractControl
 {
-    private static final float WIDTH = 30;
-    private static final float HEIGHT = 60;
+    private static final float WIDTH = 71;
+    private static final float HEIGHT = 72;
 
     private Main app;
     private Node node;
