@@ -18,7 +18,7 @@ public class MdmwControl extends AbstractControl implements Shootable
     public static final int HEIGHT = 75;
     public static final float BASE_SPEED = 600;
     private static final float BASE_REGEN_DELAY = 3;
-    private static final int BASE_HEALTH = 8;
+    private static final int BASE_HEALTH = 6;
     private Main app;
     private Picture imgHandle;
     private AnimationStation animation;
