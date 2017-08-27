@@ -1,16 +1,12 @@
 package mdmw.goldrock;
 
 import com.jme3.material.RenderState;
-import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.ui.Picture;
-import javafx.scene.transform.Transform;
 
 /**
  * Defines logic for controlling deer as they frolick about the forest. If you are kind to them, they will ignore you.
@@ -201,7 +197,13 @@ public class DeerControl extends AbstractControl
         if (!state.equals(DeerState.DYING))
         {
             state = DeerState.DYING;
-            app.getStateManager().getState(ShootDeerState.class).onKillDeer();
+
+            ShootDeerState shootDeerState = app.getStateManager().getState(ShootDeerState.class);
+            if (shootDeerState != null)
+            {
+                shootDeerState.onKillDeer();
+            }
+
             currentAnimation = createDyingAnimation();
         }
     }

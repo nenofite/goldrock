@@ -2,6 +2,7 @@ package mdmw.goldrock;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
+import com.jme3.app.state.AppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioData;
 import com.jme3.audio.AudioNode;
@@ -20,8 +21,18 @@ public class ShootDeerState extends AbstractAppState
     /**
      * The delay it takes to reload, in ms
      */
-    public static final long RELOAD_TIME = 500;
+    public static final long RELOAD_TIME = 1000;
+    /**
+     * How long before the player has to shoot at deer
+     */
+    public static final long TIME_LIMIT = 5 * 1000;
+    /**
+     * The number of deer to kill in order to see the MDMW ending
+     */
+    public static final int MDMW_KILL_COUNT = 1000;
+
     private static final int MAX_DEER_SPAWN_RATE = 3;
+
     private Main app;
     private Node node;
     private AudioNode gunshot;
@@ -30,6 +41,12 @@ public class ShootDeerState extends AbstractAppState
     private int maxBullets = 3;
     private int bullets;
     private int killCount;
+
+    /**
+     * The timestamp of when the player started this phase. We use this to know when the time is up and we move on to
+     * the score screen or to MDMW.
+     */
+    private long started;
     /**
      * The timestamp when we started reloading, or -1 if we're not reloading
      */
@@ -68,6 +85,8 @@ public class ShootDeerState extends AbstractAppState
         this.app.getGuiNode().attachChild(node);
 
         until_next_deer = (float) (Math.random() * MAX_DEER_SPAWN_RATE);
+
+        started = System.currentTimeMillis();
 
         lanes = new ArrayList<>();
         lanes.add(new DeerLane(0.1f, DeerLane.Orientation.LEFT_FACING, 5f, 15f, 30f, 40f, 50f));
@@ -110,6 +129,11 @@ public class ShootDeerState extends AbstractAppState
         if (startedReloading != -1 && System.currentTimeMillis() - startedReloading >= RELOAD_TIME)
         {
             finishReload();
+        }
+
+        if (System.currentTimeMillis() - started >= TIME_LIMIT)
+        {
+            gameOver();
         }
     }
 
@@ -193,6 +217,24 @@ public class ShootDeerState extends AbstractAppState
             bullets = maxBullets;
             gunReload.playInstance();
         }
+    }
+
+    /**
+     * Run when the timer runs out. This will either send the player to the newspaper screen or to the MDMW
+     */
+    public void gameOver()
+    {
+        AppState nextState;
+        if (killCount < MDMW_KILL_COUNT)
+        {
+            nextState = new NewspaperState(killCount);
+        } else
+        {
+            nextState = /* TODO MDMW */ null;
+        }
+
+        app.getStateManager().detach(this);
+        app.getStateManager().attach(nextState);
     }
 
     /**

@@ -68,7 +68,7 @@ public class TitleState extends AbstractAppState implements ActionListener
         {
             // Switch to shoot deer state
             app.getStateManager().detach(this);
-            app.getStateManager().attach(new NewspaperState());
+            app.getStateManager().attach(new ShootDeerState());
         }
     }
 

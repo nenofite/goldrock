@@ -45,6 +45,11 @@ public class BulletsControl extends AbstractControl
     protected void controlUpdate(float tpf)
     {
         ShootDeerState shootDeerState = app.getStateManager().getState(ShootDeerState.class);
+        if (shootDeerState == null)
+        {
+            return;
+        }
+
         int numBullets = shootDeerState.getBullets();
         int numEmpties = shootDeerState.getMaxBullets() - shootDeerState.getBullets();
 

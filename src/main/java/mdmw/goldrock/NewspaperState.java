@@ -14,10 +14,12 @@ public class NewspaperState extends AbstractAppState implements ActionListener
 {
     private Main app;
     private Node node;
+    private final int deerKilled;
 
-    public NewspaperState()
+    public NewspaperState(int deerKilled)
     {
         node = new Node("Newspaper State");
+        this.deerKilled = deerKilled;
     }
 
     @Override

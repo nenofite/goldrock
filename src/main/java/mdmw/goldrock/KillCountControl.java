@@ -40,7 +40,12 @@ public class KillCountControl extends AbstractControl
     @Override
     protected void controlUpdate(float tpf)
     {
-        text.setText("" + app.getStateManager().getState(ShootDeerState.class).getKillCount());
+        ShootDeerState shootDeerState = app.getStateManager().getState(ShootDeerState.class);
+        if (shootDeerState == null)
+        {
+            return;
+        }
+        text.setText("" + shootDeerState.getKillCount());
     }
 
     @Override

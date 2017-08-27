@@ -92,6 +92,10 @@ public class CrosshairControl extends AbstractControl implements ActionListener
     public void onAction(String name, boolean isPressed, float tpf)
     {
         ShootDeerState shootDeerState = app.getStateManager().getState(ShootDeerState.class);
+        if (shootDeerState == null)
+        {
+            return;
+        }
 
         if (ShootDeerState.SHOOT_MAPPING.equals(name) && isPressed)
         {
@@ -117,6 +121,12 @@ public class CrosshairControl extends AbstractControl implements ActionListener
      */
     private DeerControl pickDeer()
     {
+        ShootDeerState shootDeerState = app.getStateManager().getState(ShootDeerState.class);
+        if (shootDeerState == null)
+        {
+            return null;
+        }
+
         CollisionResults collisionResults = new CollisionResults();
 
         Vector3f click3d = getSpatial().getWorldTranslation();
@@ -125,7 +135,7 @@ public class CrosshairControl extends AbstractControl implements ActionListener
         // Aim the ray from the clicked spot forwards.
         Ray ray = new Ray(click3d, dir);
 
-        app.getStateManager().getState(ShootDeerState.class).getNode().collideWith(ray, collisionResults);
+        shootDeerState.getNode().collideWith(ray, collisionResults);
 
         for (CollisionResult result : collisionResults)
         {
