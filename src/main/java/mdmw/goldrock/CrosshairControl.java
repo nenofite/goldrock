@@ -3,10 +3,7 @@ package mdmw.goldrock;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.controls.ActionListener;
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.Ray;
-import com.jme3.math.Vector2f;
-import com.jme3.math.Vector3f;
+import com.jme3.math.*;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
@@ -56,6 +53,9 @@ public class CrosshairControl extends AbstractControl implements ActionListener
     {
         // Get mouse location
         Vector2f cursor = app.getInputManager().getCursorPosition();
+        cursor.x = FastMath.clamp(cursor.x, 0, app.getCamera().getWidth());
+        cursor.y = FastMath.clamp(cursor.y, 0, app.getCamera().getHeight());
+
         Vector3f target = new Vector3f(cursor.getX(), cursor.getY(), 0f);
 
         // Move crosshair towards mouse
