@@ -1,9 +1,21 @@
 group 'mdmw'
 version '1.0-SNAPSHOT'
 
-apply plugin: 'java'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+    }
+}
 
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
 sourceCompatibility = 1.8
+
+apply plugin: 'application'
+mainClassName = 'mdmw.goldrock.Main'
 
 repositories {
     mavenCentral()

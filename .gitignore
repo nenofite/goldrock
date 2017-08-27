@@ -17,3 +17,4 @@ hs_err_pid*
 *.dll
 
 out/
+build/
