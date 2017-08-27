@@ -33,6 +33,9 @@ public class ShootDeerState extends AbstractAppState
      * The number of deer to kill in order to see the MDMW ending
      */
     public static final int MDMW_KILL_COUNT = 10;
+    public static final int DEER_ROUND_ONE = 13;
+    public static final int DEER_ROUND_TWO = 22;
+    public static final int DEER_ROUND_THREE = 39;
     /**
      * The total deer across all rounds
      */
@@ -389,34 +392,76 @@ public class ShootDeerState extends AbstractAppState
     {
         // Pick the title text
         final String titleStr;
-        float fracKilled = (float) totalKillCount / TOTAL_DEER;
-        if (fracKilled == 0)
+        float fracKilled = 0.0f;
+        switch (huntNumber)
         {
-            if (huntNumber == 3)
-            {
-                titleStr = "Friend of the Deer";
-            } else
-            {
-                titleStr = "No title earned.";
-            }
-        } else if (fracKilled <= 0.2f)
-        {
-            titleStr = "Beginner Hunter";
-        } else if (fracKilled <= 0.4f)
-        {
-            titleStr = "Hobbyist Hunter";
-        } else if (fracKilled <= 0.6f)
-        {
-            titleStr = "Competent Hunter";
-        } else if (fracKilled <= 0.8f)
-        {
-            titleStr = "Legendary Hunter";
-        } else if (fracKilled < 1)
-        {
-            titleStr = "Deer Murderer";
-        } else
-        {
-            titleStr = "Oh God Why";
+            case 1:
+                fracKilled = (float) totalKillCount / DEER_ROUND_ONE;
+                if (fracKilled < 0.3f)
+                {
+                    titleStr = "Lousy Shot";
+                }
+                else if (fracKilled < 0.7f)
+                {
+                    titleStr = "Beginner Hunter";
+                }
+                else if (fracKilled < 0.999f)
+                {
+                    titleStr = "Talented Rookie";
+                }
+                else
+                {
+                    titleStr = "Rising Star";
+                }
+                break;
+            case 2:
+                fracKilled = (float) totalKillCount / (DEER_ROUND_ONE + DEER_ROUND_TWO);
+                if (fracKilled < 0.3f)
+                {
+                    titleStr = "Consistently Lousy Shot";
+                }
+                else if (fracKilled < 0.7f)
+                {
+                    titleStr = "Competent Hunter";
+                }
+                else if (fracKilled < 0.9f)
+                {
+                    titleStr = "Gifted Hunter";
+                }
+                else if (fracKilled < 0.999f)
+                {
+                    titleStr = "Deadeye";
+                }
+                else
+                {
+                    titleStr = "Inescapable";
+                }
+                break;
+            case 3:
+                fracKilled = (float) totalKillCount / (DEER_ROUND_ONE + DEER_ROUND_TWO + DEER_ROUND_THREE);
+                if (fracKilled < 0.001f)
+                {
+                    titleStr = "Friend of the Deer";
+                }
+                else if (fracKilled < 0.3f)
+                {
+                    titleStr = "Nearly Blind";
+                }
+                else if (fracKilled < 0.7f)
+                {
+                    titleStr = "Seasoned Veteran";
+                }
+                else if (fracKilled < 0.999f)
+                {
+                    titleStr = "Slaughterer of the Masses";
+                }
+                else
+                {
+                    titleStr = "Oh God Why";
+                }
+                break;
+            default:
+                titleStr = "Missingo";
         }
 
         // Make some text
