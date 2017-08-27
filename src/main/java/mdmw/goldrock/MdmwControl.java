@@ -42,7 +42,8 @@ public class MdmwControl extends AbstractControl implements Shootable
     private static AnimationStation createRunAnimation()
     {
         AnimationStation ret = new AnimationStation();
-        ret.addImage("Sprites/mdmw.png", 1.0f);
+        ret.addImage("Sprites/wolf_running_0.png", 0.3f);
+        ret.addImage("Sprites/wolf_running_1.png", 0.7f);
         return ret;
     }
 
