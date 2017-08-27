@@ -14,12 +14,12 @@ public class NewspaperState extends AbstractAppState implements ActionListener
 {
     private Main app;
     private Node node;
-    private final int deerKilled;
+    private final int killCount;
 
-    public NewspaperState(int deerKilled)
+    public NewspaperState(int killCount)
     {
         node = new Node("Newspaper State");
-        this.deerKilled = deerKilled;
+        this.killCount = killCount;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class NewspaperState extends AbstractAppState implements ActionListener
         this.app.getGuiNode().attachChild(node);
 
         // Make the newspaper
-        node.attachChild(NewspaperControl.makeNewspaper("Sprites/newspaper.png", this.app));
+        node.attachChild(NewspaperControl.makeNewspaper(getNewspaperForKillCount(killCount), this.app));
 
         // Register as an event listener
         app.getInputManager().addListener(this, Main.NEXT_SCREEN_MAPPING);
@@ -54,6 +54,24 @@ public class NewspaperState extends AbstractAppState implements ActionListener
             // Move on to the next screen
             app.getStateManager().detach(this);
             app.getStateManager().attach(new ShootDeerState());
+        }
+    }
+
+
+    /**
+     * Get the path of the newspaper image based on the given kill count
+     *
+     * @param killCount The number of deers killed
+     * @return The path to an image
+     */
+    private String getNewspaperForKillCount(int killCount)
+    {
+        if (killCount < 10)
+        {
+            return "Sprites/newspaper_1.png";
+        } else
+        {
+            return "Sprites/newspaper_2.png";
         }
     }
 }
