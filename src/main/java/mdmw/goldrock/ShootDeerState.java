@@ -17,7 +17,8 @@ public class ShootDeerState extends AbstractAppState
 {
     public static final String SHOOT_MAPPING = "Shoot Deer";
     public final static int Z_BACKGROUND = -10;
-    public static final int Z_FOREGROUND = -5;
+    public static final int Z_DEER = -5;
+    public static final int Z_FOREGROUND = -2;
     /**
      * The delay it takes to reload, in ms
      */
@@ -72,6 +73,8 @@ public class ShootDeerState extends AbstractAppState
         // Add the background
         node.attachChild(makeBackground());
 
+        //node.attachChild(makeForeground());
+
         // Add the kill count
         node.attachChild(KillCountControl.makeKillCount(this.app));
 
@@ -93,9 +96,19 @@ public class ShootDeerState extends AbstractAppState
 
         lanes = new ArrayList<>();
         lanes.add(new DeerLane(0.1f, DeerLane.Orientation.LEFT_FACING, 5f, 15f, 30f, 40f, 50f));
-        lanes.add(new DeerLane(0.25f, DeerLane.Orientation.RIGHT_FACING, 1f, 7f, 14f, 21f, 28f, 35f, 42f, 49f, 52f));
+        lanes.add(new DeerLane(0.4f, DeerLane.Orientation.RIGHT_FACING, 1f, 7f, 14f, 21f, 28f, 35f, 42f, 49f, 52f));
         lanes.add(new DeerLane(0.6f, DeerLane.Orientation.LEFT_FACING, 3f, 5f, 50f));
-        lanes.add(new DeerLane(0.8f, DeerLane.Orientation.RIGHT_FACING, 3f, 5f, 50f));
+        lanes.add(new DeerLane(0.85f, DeerLane.Orientation.RIGHT_FACING, 3f, 5f, 50f));
+    }
+
+    private Spatial makeForeground()
+    {
+        Picture fg = new Picture("Foreground");
+        fg.setImage(app.getAssetManager(), "Sprites/ForegroundLayer.png", true);
+        fg.setWidth(app.getCamera().getWidth());
+        fg.setHeight(app.getCamera().getHeight());
+        fg.setLocalTranslation(0, 0, Z_FOREGROUND);
+        return fg;
     }
 
     @Override
@@ -189,7 +202,6 @@ public class ShootDeerState extends AbstractAppState
             --bullets;
 
             gunshot.playInstance();
-            System.out.println("POW!");
         }
 
         if (bullets == 0)

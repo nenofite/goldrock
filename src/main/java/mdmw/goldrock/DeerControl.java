@@ -18,7 +18,8 @@ public class DeerControl extends AbstractControl
     private static final int ACCRUE_THRESHOLD = 1;
     private static final int DEER_MOVEMENT_MAX = 30;
     private static final int DEER_MOVEMENT_MIN = 20;
-    private static final float DEER_MOVEMENT_JUMP_MODIFIER = 7f;
+    private static final float DEER_MOVEMENT_RUN_MODIFIER = 7f;
+    private static final float DEER_MOVEMENT_JUMP_MODIFIER = 14f;
     private static final int DEER_DYING_SPEED = 60;
     private static final String IMG_WALKING = "Sprites/deer.png";
     private static final String IMG_EATING = "Sprites/eating_deer.png";
@@ -31,15 +32,16 @@ public class DeerControl extends AbstractControl
     private AnimationStation currentAnimation;
     private boolean flipped;
     private float remainingDeathDistance = HEIGHT + 15;
+    private float widthScale = 1f;
 
     private DeerControl(Main app, Picture imgHandle, boolean facingLeft)
     {
         this.imgHandle = imgHandle;
         this.app = app;
         deerSpeed = (float) (Math.random() * (DEER_MOVEMENT_MAX - DEER_MOVEMENT_MIN)) + DEER_MOVEMENT_MIN;
-        state = DeerState.JUMPING;
+        state = DeerState.RUNNING;
         flipped = facingLeft;
-        currentAnimation = createJumpingAnimation();
+        currentAnimation = createRunningAnimation();
     }
 
     /**
@@ -53,7 +55,7 @@ public class DeerControl extends AbstractControl
         Node commanderNode = new Node("Deer Commander");
         Picture deer = new Picture("Regular Deer");
         commanderNode.addControl(new DeerControl(app, deer, facingLeft));
-        commanderNode.setLocalTranslation(0, 0, ShootDeerState.Z_FOREGROUND);
+        commanderNode.setLocalTranslation(0, 0, ShootDeerState.Z_DEER);
 
         deer.setImage(app.getAssetManager(), IMG_WALKING, true);
         deer.getMaterial().getAdditionalRenderState().setFaceCullMode(RenderState.FaceCullMode.Off);
@@ -69,21 +71,54 @@ public class DeerControl extends AbstractControl
         return commanderNode;
     }
 
-    private static DeerState transitionState(DeerState start)
+    private DeerState transitionState(DeerState start, float x, float y, float deerWidth)
     {
+        if (start == DeerState.DYING)
+        {
+            // Frankenstein is not present
+            return DeerState.DYING;
+        }
+
         double randomness = Math.random();
+        float fX = x / app.getCamera().getWidth();
+        float fY = y / app.getCamera().getHeight();
+        float fW = deerWidth / app.getCamera().getHeight();
+        if (0.05 < fY && fY < 0.2)
+        {
+            // bottom lane, right to left
+            if (0.4 < fX - fW && fX - fW < 0.7)
+            {
+                return DeerState.JUMPING;
+            }
+        } else if (0.3 < fY && fY < 0.5)
+        {
+            // 2nd from bottom, left to right
+            if (0.3 < fX + fW && fX + fW < 0.45)
+            {
+                return DeerState.JUMPING;
+            }
+        } else if (0.55 < fY && fY < 0.65)
+        {
+            // 3rd from bottom, right to left
+            if (0.6 < fX && fX < 0.7)
+            {
+                return DeerState.JUMPING;
+            }
+        }
         switch (start)
         {
+            case JUMPING:
+                return DeerState.WALKING;
             case WALKING:
                 if (randomness < 0.1)
                 {
                     return DeerState.EATING;
                 } else if (randomness < 0.3)
                 {
-                    return DeerState.JUMPING;
+                    return DeerState.RUNNING;
                 }
                 break;
-            case JUMPING:
+            case RUNNING:
                 if (randomness < 0.5)
                 {
                     return DeerState.WALKING;
@@ -95,8 +130,6 @@ public class DeerControl extends AbstractControl
                     return DeerState.WALKING;
                 }
                 break;
-            default:
-                return start;
         }
         return start;
     }
@@ -107,13 +140,14 @@ public class DeerControl extends AbstractControl
         accrue += tpf;
         if (accrue >= ACCRUE_THRESHOLD)
         {
-            DeerState nextState = transitionState(state);
+            DeerState nextState = transitionState(state, getSpatial().getLocalTranslation().getX(),
+                    getSpatial().getLocalTranslation().getY(), WIDTH * widthScale);
             if (state != nextState)
             {
                 switch (nextState)
                 {
-                    case JUMPING:
-                        currentAnimation = createJumpingAnimation();
+                    case RUNNING:
+                        currentAnimation = createRunningAnimation();
                         break;
                     case WALKING:
                         currentAnimation = createWalkingAnimation();
@@ -123,6 +157,9 @@ public class DeerControl extends AbstractControl
                         break;
                     case EATING:
                         currentAnimation = createEatingAnimation();
+                        break;
+                    case JUMPING:
+                        currentAnimation = createJumpingAnimation();
                         break;
                 }
             }
@@ -144,18 +181,29 @@ public class DeerControl extends AbstractControl
                 imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
                 getSpatial().move(new Vector3f(directionModifier * deerSpeed * tpf, 0, 0));
                 break;
+            case RUNNING:
+                imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
+                getSpatial().move(new Vector3f(directionModifier * deerSpeed * tpf * DEER_MOVEMENT_RUN_MODIFIER, 0, 0));
+                break;
+            case EATING:
+                imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
+                break;
             case JUMPING:
                 imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
                 getSpatial()
                         .move(new Vector3f(directionModifier * deerSpeed * tpf * DEER_MOVEMENT_JUMP_MODIFIER, 0, 0));
                 break;
-            case EATING:
-                imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
-                break;
         }
     }
 
     private AnimationStation createJumpingAnimation()
+    {
+        AnimationStation stat = new AnimationStation();
+        stat.addImage("Sprites/running_deer_1.png", 1f);
+        return stat;
+    }
+
+    private AnimationStation createRunningAnimation()
     {
         AnimationStation stat = new AnimationStation();
         stat.addImage("Sprites/running_deer_0.png", 0.2f);
@@ -210,6 +258,6 @@ public class DeerControl extends AbstractControl
 
     enum DeerState
     {
-        WALKING, EATING, JUMPING, DYING
+        WALKING, EATING, RUNNING, DYING, JUMPING
     }
 }

@@ -132,6 +132,9 @@ public class CrosshairControl extends AbstractControl implements ActionListener
         Vector3f click3d = getSpatial().getWorldTranslation();
         Vector3f dir = new Vector3f(0, 0, -1);
 
+        System.out.printf("Clicked (%f, %f)\n", click3d.getX() / app.getCamera().getWidth(),
+                click3d.getY() / app.getCamera().getHeight());
+
         // Aim the ray from the clicked spot forwards.
         Ray ray = new Ray(click3d, dir);
 

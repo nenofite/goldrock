@@ -26,6 +26,7 @@ public class Main extends SimpleApplication
         settings.setResolution(800, 800);
         setSettings(settings);
         setShowSettings(false);
+        setPauseOnLostFocus(false);
         setDisplayFps(false);
     }
 
