@@ -45,7 +45,7 @@ public class CrosshairControl extends AbstractControl implements ActionListener
         crosshair.setHeight(HEIGHT);
         crosshair.setLocalTranslation(-WIDTH / 2, -HEIGHT / 2, 0);
 
-        Node result = new Node();
+        Node result = new Node("Chair");
         result.attachChild(crosshair);
         result.addControl(new CrosshairControl(app));
         return result;

@@ -160,24 +160,33 @@ public class MdmwControl extends AbstractControl implements Shootable
         {
             if (imgHandle == null)
             {
-                // Start a new lap with a snarl
-                playSoundAtLocation(snarlSound);
+                if (lap >= 3)
+                {
+                    ShootDeerState state = app.getStateManager().getState(ShootDeerState.class);
+                    if (state != null)
+                    {
+                        state.notifyWolfKilledYou();
+                    }
+                    return;
+                } else
+                {
+                    lap += 1;
 
-                lap += 1;
-                imgHandle = createPicture(app.getAssetManager());
-                ((Node) getSpatial()).attachChild(imgHandle);
-                imgHandle.setImage(app.getAssetManager(), animation.getCurrent(), true);
+                    imgHandle = createPicture(app.getAssetManager());
+                    ((Node) getSpatial()).attachChild(imgHandle);
+                    imgHandle.setImage(app.getAssetManager(), animation.getCurrent(), true);
 
-                boolean facingLeft = getFacingLeftForLap(lap);
-                float scale = getScaleForLap(lap);
-                float posneg = (facingLeft) ? -1 : 1;
+                    boolean facingLeft = getFacingLeftForLap(lap);
+                    float scale = getScaleForLap(lap);
+                    float posneg = (facingLeft) ? -1 : 1;
 
-                imgHandle.scale(posneg * scale, 1, 1);
+                    imgHandle.scale(posneg * scale, 1, 1);
 
-                float xLoc = (facingLeft) ? app.getCamera().getWidth() : 0;
-                float yLoc = getVerticalFractionForLap(lap) * app.getCamera().getHeight();
+                    float xLoc = (facingLeft) ? app.getCamera().getWidth() : 0;
+                    float yLoc = getVerticalFractionForLap(lap) * app.getCamera().getHeight();
 
-                getSpatial().setLocalTranslation(xLoc, yLoc, ShootDeerState.Z_DEER);
+                    getSpatial().setLocalTranslation(xLoc, yLoc, ShootDeerState.Z_DEER);
+                }
             }
 
             animation.progress(tpf);
@@ -206,9 +215,13 @@ public class MdmwControl extends AbstractControl implements Shootable
         {
             System.out.println("MDMW should die.");
             animation = createDeathAnimation();
+            ShootDeerState state = app.getStateManager().getState(ShootDeerState.class);
+            if (state != null)
+            {
+                state.notifyWolfDied();
+            }
         }
     }
-
 
     /**
      * Make the sound effect nodes

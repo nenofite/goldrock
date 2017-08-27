@@ -61,6 +61,7 @@ public class ShootDeerState extends AbstractAppState
     private int huntNumber;
     private int activeDeer;
     private Node titleEarned;
+    private boolean doneIn = false;
 
     public ShootDeerState(int huntNumber, int prevKillCount)
     {
@@ -171,6 +172,7 @@ public class ShootDeerState extends AbstractAppState
 
     private void prepareFinalHunt()
     {
+        doneIn = false;
         ++activeDeer;
         Spatial s = MdmwControl.createMdmw(app);
         node.attachChild(s);
@@ -510,5 +512,24 @@ public class ShootDeerState extends AbstractAppState
         bar.setLocalTranslation(0, app.getCamera().getHeight() - height, 5);
 
         return bar;
+    }
+
+    public void notifyWolfKilledYou()
+    {
+        if (!doneIn)
+        {
+            node.attachChild(WolfEatsYouControl.createWolfEatingYou(app));
+            doneIn = true;
+            Spatial chair = node.getChild("Chair");
+            if (chair != null)
+            {
+                Utils.detachAllControls((Node) chair);
+                chair.removeFromParent();
+            }
+        }
+    }
+
+    public void notifyWolfDied()
+    {
     }
 }
