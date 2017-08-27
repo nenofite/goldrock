@@ -361,7 +361,7 @@ public class ShootDeerState extends AbstractAppState
             AppState nextState;
             if (killCount < MDMW_KILL_COUNT)
             {
-                nextState = new NewspaperState(totalKillCount, huntNumber);
+                nextState = new NewspaperState(totalKillCount);
             } else
             {
                 nextState = /* TODO MDMW */ null;

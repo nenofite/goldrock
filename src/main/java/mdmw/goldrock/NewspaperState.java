@@ -18,13 +18,11 @@ public class NewspaperState extends AbstractAppState implements ActionListener
     private Main app;
     private Node node;
     private AudioNode music;
-    private int intermissionNumber;
 
-    public NewspaperState(int killCount, int intermissionNumber)
+    public NewspaperState(int killCount)
     {
         node = new Node("Newspaper State");
         this.killCount = killCount;
-        this.intermissionNumber = intermissionNumber;
     }
 
     @Override
@@ -35,7 +33,7 @@ public class NewspaperState extends AbstractAppState implements ActionListener
         this.app.getGuiNode().attachChild(node);
 
         // Make the newspaper
-        node.attachChild(NewspaperControl.makeNewspaper(getNewspaper(killCount, intermissionNumber), this.app));
+        node.attachChild(NewspaperControl.makeNewspaper(getNewspaper(killCount), this.app));
 
         // Register as an event listener
         app.getInputManager().addListener(this, Main.NEXT_SCREEN_MAPPING);
@@ -68,35 +66,24 @@ public class NewspaperState extends AbstractAppState implements ActionListener
         {
             // Move on to the next screen
             app.getStateManager().detach(this);
-            app.getStateManager().attach(new ShootDeerState(1, 0));
+            app.getStateManager().attach(new PlayAgainState());
         }
     }
 
     /**
      * Get the path of the newspaper image based on the given kill count
      *
-     * @param killCount          The number of deers killed
-     * @param intermissionNumber How many hunts we've had
+     * @param killCount The number of deers killed
      * @return The path to an image
      */
-    private String getNewspaper(int killCount, int intermissionNumber)
+    private String getNewspaper(int killCount)
     {
-        switch (intermissionNumber)
+        if (killCount < 10)
         {
-            case 1:
-                if (killCount < 10)
-                {
-                    return "Sprites/newspaper_1.png";
-                } else
-                {
-                    return "Sprites/newspaper_2.png";
-                }
-            case 2:
-                return "Sprites/newspaper_1.png";
-            case 3:
-                return "Sprites/newspaper_1.png";
-            default:
-                throw new IllegalStateException("We only have three intermissions!");
+            return "Sprites/newspaper_1.png";
+        } else
+        {
+            return "Sprites/newspaper_2.png";
         }
     }
 }
