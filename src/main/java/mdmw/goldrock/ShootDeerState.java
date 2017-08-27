@@ -25,7 +25,7 @@ public class ShootDeerState extends AbstractAppState
     /**
      * How long before the player has to shoot at deer
      */
-    public static final long TIME_LIMIT = 5 * 1000;
+    public static final long TIME_LIMIT = 60 * 1000;
     /**
      * The number of deer to kill in order to see the MDMW ending
      */
