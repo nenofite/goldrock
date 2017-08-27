@@ -146,17 +146,20 @@ public class DeerControl extends AbstractControl
         }
 
         DeerState nextState = state;
-        if (shouldJump())
+        if (state != DeerState.DYING)
         {
-            nextState = DeerState.JUMPING;
-        } else
-        {
-            accrue += tpf;
-            if (state.equals(DeerState.JUMPING) || accrue >= ACCRUE_THRESHOLD)
+            if (shouldJump())
             {
-                nextState = transitionState(state, getSpatial().getLocalTranslation().getX(),
-                        getSpatial().getLocalTranslation().getY(), getDeerWidth());
-                accrue = 0;
+                nextState = DeerState.JUMPING;
+            } else
+            {
+                accrue += tpf;
+                if (state.equals(DeerState.JUMPING) || accrue >= ACCRUE_THRESHOLD)
+                {
+                    nextState = transitionState(state, getSpatial().getLocalTranslation().getX(),
+                            getSpatial().getLocalTranslation().getY(), getDeerWidth());
+                    accrue = 0;
+                }
             }
         }
 
