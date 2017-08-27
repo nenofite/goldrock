@@ -135,7 +135,15 @@ public class CrosshairControl extends AbstractControl implements ActionListener
         int y = (int) (click3d.getY() * t.getImage().getHeight() / app.getCamera().getHeight());
         int x = (int) (click3d.getX() * t.getImage().getWidth() / app.getCamera().getWidth());
         ImageRaster ir = ImageRaster.create(t.getImage());
-        ColorRGBA p = ir.getPixel(x, y);
+        ColorRGBA p;
+        try
+        {
+            p = ir.getPixel(x, y);
+        } catch (IllegalArgumentException e)
+        {
+            // The x and y were outside the image; this means nothing was hit
+            p = new ColorRGBA(0, 0, 0, 0);
+        }
 
         if (p.a < 0.01f)
         {
