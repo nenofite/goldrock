@@ -9,25 +9,42 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.ui.Picture;
 
-public class MdmwControl extends AbstractControl
+public class MdmwControl extends AbstractControl implements Shootable
 {
     public static final int WIDTH = 100;
     public static final int HEIGHT = 75;
     public static final float BASE_SPEED = 600;
     private static final float BASE_REGEN_DELAY = 3;
+    private static final int BASE_HEALTH = 8;
     private Main app;
     private Picture imgHandle;
     private AnimationStation animation;
     private int lap;
     private float remainingRegenDelay;
+    private int health;
 
     private MdmwControl(Main app, Picture imgHandle)
     {
         this.app = app;
         this.imgHandle = imgHandle;
 
-        animation = new AnimationStation();
-        animation.addImage("Sprites/mdmw.png", 1.0f);
+        animation = createRunAnimation();
+
+        health = BASE_HEALTH;
+    }
+
+    private static AnimationStation createRunAnimation()
+    {
+        AnimationStation ret = new AnimationStation();
+        ret.addImage("Sprites/mdmw.png", 1.0f);
+        return ret;
+    }
+
+    private static AnimationStation createDeathAnimation()
+    {
+        AnimationStation ret = new AnimationStation();
+        ret.addImage("Sprites/mdmw_death.png", 1.0f);
+        return ret;
     }
 
     public static Spatial createMdmw(Main app)
@@ -121,8 +138,6 @@ public class MdmwControl extends AbstractControl
             remainingRegenDelay -= tpf;
         } else
         {
-            animation.progress(tpf);
-
             if (imgHandle == null)
             {
                 lap += 1;
@@ -142,13 +157,32 @@ public class MdmwControl extends AbstractControl
                 getSpatial().setLocalTranslation(xLoc, yLoc, ShootDeerState.Z_DEER);
             }
 
-            float posneg = (getFacingLeftForLap(lap)) ? -1 : 1;
-            getSpatial().move(posneg * BASE_SPEED * getScaleForLap(lap) * tpf, 0, 0);
+            animation.progress(tpf);
+            imgHandle.setImage(app.getAssetManager(), animation.getCurrent(), true);
+
+            if (health > 0)
+            {
+                float posneg = (getFacingLeftForLap(lap)) ? -1 : 1;
+                getSpatial().move(posneg * BASE_SPEED * getScaleForLap(lap) * tpf, 0, 0);
+            }
         }
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp)
     {
+    }
+
+    @Override
+    public void shoot()
+    {
+        System.out.println("MDMW hit");
+
+        --health;
+        if (health <= 0)
+        {
+            System.out.println("MDMW should die.");
+            animation = createDeathAnimation();
+        }
     }
 }

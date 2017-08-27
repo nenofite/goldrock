@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Defines logic for controlling deer as they frolick about the forest. If you are kind to them, they will ignore you.
  */
-public class DeerControl extends AbstractControl
+public class DeerControl extends AbstractControl implements Shootable
 {
     public static final int WIDTH = 100;
     public static final int HEIGHT = 75;
@@ -281,6 +281,7 @@ public class DeerControl extends AbstractControl
     /**
      * Shoots the deer. After this is done, the deer will proceed to complete sudoku.
      */
+    @Override
     public void shoot()
     {
         if (!state.equals(DeerState.DYING))

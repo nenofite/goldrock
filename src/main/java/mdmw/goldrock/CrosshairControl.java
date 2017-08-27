@@ -109,6 +109,14 @@ public class CrosshairControl extends AbstractControl implements ActionListener
                 {
                     deer.shoot();
                 }
+
+                MdmwControl mdmw = pickMdmw();
+                {
+                    if (mdmw != null)
+                    {
+                        mdmw.shoot();
+                    }
+                }
             }
         }
     }
@@ -159,6 +167,54 @@ public class CrosshairControl extends AbstractControl implements ActionListener
                 if (deer != null)
                 {
                     return deer;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private MdmwControl pickMdmw()
+    {
+        ShootDeerState shootDeerState = app.getStateManager().getState(ShootDeerState.class);
+        if (shootDeerState == null)
+        {
+            return null;
+        }
+
+        CollisionResults collisionResults = new CollisionResults();
+
+        Vector3f click3d = getSpatial().getWorldTranslation();
+        Vector3f dir = new Vector3f(0, 0, -1);
+
+        Texture t = app.getAssetManager().loadTexture("Sprites/ForegroundLayer.png");
+        int y = (int) (click3d.getY() * t.getImage().getHeight() / app.getCamera().getHeight());
+        int x = (int) (click3d.getX() * t.getImage().getWidth() / app.getCamera().getWidth());
+        ImageRaster ir = ImageRaster.create(t.getImage());
+        ColorRGBA p;
+        try
+        {
+            p = ir.getPixel(x, y);
+        }
+        catch (IllegalArgumentException e)
+        {
+            // The x and y were outside the image; this means nothing was hit
+            p = new ColorRGBA(0, 0, 0, 0);
+        }
+
+        if (p.a < 0.01f)
+        {
+            // Aim the ray from the clicked spot forwards.
+            Ray ray = new Ray(click3d, dir);
+
+            shootDeerState.getNode().collideWith(ray, collisionResults);
+
+            for (CollisionResult result : collisionResults)
+            {
+                MdmwControl mdmw = Utils.extractControl(result.getGeometry(), MdmwControl.class);
+                if (mdmw != null)
+                {
+                    return mdmw;
                 }
             }
         }
