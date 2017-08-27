@@ -28,7 +28,7 @@ public class ShootDeerState extends AbstractAppState
     /**
      * How long to delay between hunts
      */
-    public static final long DELAY_BETWEEN_HUNTS = 5 * 1000;
+    public static final long DELAY_BETWEEN_HUNTS = 5 * 1000 + 300;
     /**
      * The number of deer to kill in order to see the MDMW ending
      */
@@ -41,6 +41,7 @@ public class ShootDeerState extends AbstractAppState
     private AudioNode gunshot;
     private AudioNode gunReload;
     private AudioNode music;
+    private AudioNode intermissionTune;
     private int maxBullets = 3;
     private int bullets;
     private int killCount;
@@ -107,12 +108,6 @@ public class ShootDeerState extends AbstractAppState
 
     private void setupHunt(int huntNumber)
     {
-        if (music != null)
-        {
-            music.stop();
-            node.detachChild(music);
-            music = null;
-        }
         switch (huntNumber)
         {
             case 1:
@@ -352,6 +347,17 @@ public class ShootDeerState extends AbstractAppState
      */
     public void finishHunt()
     {
+        // Stop the music
+        if (music != null)
+        {
+            music.stop();
+            node.detachChild(music);
+            music = null;
+        }
+
+        // Play the short intermission tune
+        intermissionTune.playInstance();
+
         killCount = 0;
         startedWaitForNextHunt = System.currentTimeMillis();
 
@@ -482,8 +488,13 @@ public class ShootDeerState extends AbstractAppState
         gunReload = new AudioNode(app.getAssetManager(), "Audio/gun_reload.wav", AudioData.DataType.Buffer);
         gunReload.setPositional(false);
         gunReload.setVolume(2);
-        gunReload.setPositional(false);
         node.attachChild(gunReload);
+
+        intermissionTune = new AudioNode(app.getAssetManager(), "Audio/rag_short.wav", AudioData.DataType.Buffer);
+        intermissionTune.setPositional(false);
+        intermissionTune.setVolume(1);
+        intermissionTune.setLooping(false);
+        node.attachChild(intermissionTune);
     }
 
     /**
