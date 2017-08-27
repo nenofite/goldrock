@@ -7,6 +7,7 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioData;
 import com.jme3.audio.AudioNode;
 import com.jme3.font.BitmapText;
+import com.jme3.input.controls.ActionListener;
 import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -15,7 +16,7 @@ import com.jme3.ui.Picture;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShootDeerState extends AbstractAppState
+public class ShootDeerState extends AbstractAppState implements ActionListener
 {
     public static final String SHOOT_MAPPING = "Shoot Deer";
     public final static int Z_BACKGROUND = -10;
@@ -100,6 +101,8 @@ public class ShootDeerState extends AbstractAppState
 
         // Load the audio
         initAudio();
+
+        this.app.getInputManager().addListener(this, Main.SKIP_DEER_MAPPING);
 
         // Attach our node
         this.app.getGuiNode().attachChild(node);
@@ -201,6 +204,8 @@ public class ShootDeerState extends AbstractAppState
             music.stop();
             music = null;
         }
+
+        app.getInputManager().removeListener(this);
 
         // Detach our node
         Utils.detachAllControls(node);
@@ -536,5 +541,31 @@ public class ShootDeerState extends AbstractAppState
 
     public void notifyWolfDied()
     {
+    }
+
+    @Override
+    public void onAction(String name, boolean isPressed, float tpf)
+    {
+        if (Main.SKIP_DEER_MAPPING.equals(name) && isPressed)
+        {
+            clearAllDeer();
+        }
+    }
+
+
+    /**
+     * Clear all the deer on the screen so we can skip to the end of this hunt. Used for debugging.
+     */
+    private void clearAllDeer()
+    {
+        System.out.println("Removing all deer");
+        lanes.clear();
+        new ArrayList<>(node.getChildren()).forEach(it -> {
+            if (it.getControl(DeerControl.class) != null)
+            {
+                it.removeFromParent();
+                notifyDeerRemoved();
+            }
+        });
     }
 }
