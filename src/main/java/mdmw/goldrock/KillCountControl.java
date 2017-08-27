@@ -57,9 +57,6 @@ public class KillCountControl extends AbstractControl
         String v;
         switch (type)
         {
-            case HUNT:
-                v = "Score: " + shootDeerState.getKillCount();
-                break;
             case TOTAL:
                 v = "" + shootDeerState.getTotalKillCount();
                 break;
@@ -77,6 +74,6 @@ public class KillCountControl extends AbstractControl
 
     enum KillCountType
     {
-        HUNT, TOTAL
+        TOTAL
     }
 }

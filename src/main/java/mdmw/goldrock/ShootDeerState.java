@@ -48,7 +48,6 @@ public class ShootDeerState extends AbstractAppState
     private AudioNode intermissionTune;
     private int maxBullets = 3;
     private int bullets;
-    private int killCount;
     private int totalKillCount;
     /**
      * When we finished the previous hunt and started waiting to start the next, or -1 if we're currently hunting
@@ -257,7 +256,6 @@ public class ShootDeerState extends AbstractAppState
      */
     public void onKillDeer()
     {
-        ++killCount;
         ++totalKillCount;
         notifyDeerRemoved();
     }
@@ -274,11 +272,6 @@ public class ShootDeerState extends AbstractAppState
     public Node getNode()
     {
         return node;
-    }
-
-    public int getKillCount()
-    {
-        return killCount;
     }
 
     public int getTotalKillCount()
@@ -365,7 +358,6 @@ public class ShootDeerState extends AbstractAppState
         // Play the short intermission tune
         intermissionTune.playInstance();
 
-        killCount = 0;
         startedWaitForNextHunt = System.currentTimeMillis();
 
         awardTitle();
@@ -379,7 +371,7 @@ public class ShootDeerState extends AbstractAppState
         startedWaitForNextHunt = -1;
         removeTitle();
 
-        if (huntNumber == 3 && killCount < MDMW_KILL_COUNT)
+        if (huntNumber == 3 && totalKillCount < MDMW_KILL_COUNT)
         {
             AppState nextState = new NewspaperState(totalKillCount);
             app.getStateManager().detach(this);
