@@ -13,6 +13,7 @@ public class Main extends SimpleApplication
     public static final String NEXT_SCREEN_MAPPING = "Next Screen";
 
     private BitmapFont bigFont;
+    private BitmapFont bigItalicFont;
 
     public Main()
     {
@@ -40,6 +41,7 @@ public class Main extends SimpleApplication
 
         // Load fonts
         bigFont = assetManager.loadFont("Fonts/big.fnt");
+        bigItalicFont = assetManager.loadFont("Fonts/big_italic.fnt");
 
         // Setup mappings
 
@@ -68,5 +70,10 @@ public class Main extends SimpleApplication
     public BitmapFont getBigFont()
     {
         return bigFont;
+    }
+
+    public BitmapFont getBigItalicFont()
+    {
+        return bigItalicFont;
     }
 }
