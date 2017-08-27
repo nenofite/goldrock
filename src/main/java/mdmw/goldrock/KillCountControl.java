@@ -7,6 +7,7 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
+import com.jme3.ui.Picture;
 
 /**
  * Display the kill count
@@ -26,15 +27,21 @@ public class KillCountControl extends AbstractControl
 
     public static Spatial makeKillCount(Main app, KillCountType type)
     {
+        Picture picture = new Picture("Trophy");
+        picture.setImage(app.getAssetManager(), "Sprites/trophy.png", true);
+        picture.setWidth(40);
+        picture.setHeight(40);
+        picture.setLocalTranslation(-50, -30, 0);
+
         BitmapText text = new BitmapText(app.getGuiFont());
         text.setSize(app.getGuiFont().getCharSet().getRenderedSize());
         text.setColor(ColorRGBA.White);
 
         Node node = new Node("Kill Count");
         node.attachChild(text);
+        node.attachChild(picture);
         node.addControl(new KillCountControl(text, app, type));
-        float xLocationMod = (type == KillCountType.TOTAL) ? 2f : 1f;
-        node.setLocalTranslation(app.getCamera().getWidth() * xLocationMod / 3f,
+        node.setLocalTranslation(app.getCamera().getWidth() / 2,
                 app.getCamera().getHeight() - text.getHeight() + 5, 10);
         return node;
     }
@@ -54,7 +61,7 @@ public class KillCountControl extends AbstractControl
                 v = "Score: " + shootDeerState.getKillCount();
                 break;
             case TOTAL:
-                v = "Total Score: " + shootDeerState.getTotalKillCount();
+                v = "" + shootDeerState.getTotalKillCount();
                 break;
             default:
                 v = "";

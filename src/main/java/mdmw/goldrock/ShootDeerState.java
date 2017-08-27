@@ -86,9 +86,6 @@ public class ShootDeerState extends AbstractAppState
         node.attachChild(makeForeground());
 
         // Add the kill count
-        node.attachChild(KillCountControl.makeKillCount(this.app, KillCountControl.KillCountType.HUNT));
-
-        // Add the kill count
         node.attachChild(KillCountControl.makeKillCount(this.app, KillCountControl.KillCountType.TOTAL));
 
         // Add the bullets
