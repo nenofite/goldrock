@@ -69,7 +69,7 @@ public class MdmwControl extends AbstractControl implements Shootable
         node.attachChild(mdmw);
 
         node.setLocalTranslation(app.getCamera().getWidth(), app.getCamera().getHeight() * getVerticalFractionForLap(0),
-                0);
+                ShootDeerState.Z_DEER);
 
         return node;
     }
