@@ -80,31 +80,6 @@ public class DeerControl extends AbstractControl
         }
 
         double randomness = Math.random();
-        float fX = x / app.getCamera().getWidth();
-        float fY = y / app.getCamera().getHeight();
-        float fW = deerWidth / app.getCamera().getHeight();
-        if (0.05 < fY && fY < 0.2)
-        {
-            // bottom lane, right to left
-            if (0.4 < fX - fW && fX - fW < 0.7)
-            {
-                return DeerState.JUMPING;
-            }
-        } else if (0.3 < fY && fY < 0.5)
-        {
-            // 2nd from bottom, left to right
-            if (0.3 < fX + fW && fX + fW < 0.45)
-            {
-                return DeerState.JUMPING;
-            }
-        } else if (0.55 < fY && fY < 0.65)
-        {
-            // 3rd from bottom, right to left
-            if (0.6 < fX && fX < 0.7)
-            {
-                return DeerState.JUMPING;
-            }
-        }
         switch (start)
         {
             case JUMPING:
@@ -137,34 +112,42 @@ public class DeerControl extends AbstractControl
     @Override
     protected void controlUpdate(float tpf)
     {
-        accrue += tpf;
-        if (accrue >= ACCRUE_THRESHOLD)
+        DeerState nextState = state;
+        if (shouldJump())
         {
-            DeerState nextState = transitionState(state, getSpatial().getLocalTranslation().getX(),
-                    getSpatial().getLocalTranslation().getY(), WIDTH * widthScale);
-            if (state != nextState)
+            nextState = DeerState.JUMPING;
+        } else
+        {
+            accrue += tpf;
+            if (state.equals(DeerState.JUMPING) || accrue >= ACCRUE_THRESHOLD)
             {
-                switch (nextState)
-                {
-                    case RUNNING:
-                        currentAnimation = createRunningAnimation();
-                        break;
-                    case WALKING:
-                        currentAnimation = createWalkingAnimation();
-                        break;
-                    case DYING:
-                        currentAnimation = createDyingAnimation();
-                        break;
-                    case EATING:
-                        currentAnimation = createEatingAnimation();
-                        break;
-                    case JUMPING:
-                        currentAnimation = createJumpingAnimation();
-                        break;
-                }
+                nextState = transitionState(state, getSpatial().getLocalTranslation().getX(),
+                        getSpatial().getLocalTranslation().getY(), getDeerWidth());
+                accrue = 0;
+            }
+        }
+
+        if (!state.equals(nextState))
+        {
+            switch (nextState)
+            {
+                case RUNNING:
+                    currentAnimation = createRunningAnimation();
+                    break;
+                case WALKING:
+                    currentAnimation = createWalkingAnimation();
+                    break;
+                case DYING:
+                    currentAnimation = createDyingAnimation();
+                    break;
+                case EATING:
+                    currentAnimation = createEatingAnimation();
+                    break;
+                case JUMPING:
+                    currentAnimation = createJumpingAnimation();
+                    break;
             }
             state = nextState;
-            accrue = 0;
         }
 
         currentAnimation.progress(tpf);
@@ -254,6 +237,49 @@ public class DeerControl extends AbstractControl
 
             currentAnimation = createDyingAnimation();
         }
+    }
+
+
+    private float getDeerWidth()
+    {
+        return WIDTH * widthScale;
+    }
+
+
+    /**
+     * Check whether the deer is currently in a position where it must be jumping (eg. over a creek)
+     *
+     * @return True if the deer should be jumping
+     */
+    private boolean shouldJump()
+    {
+        float fX = getSpatial().getLocalTranslation().getX() / app.getCamera().getWidth();
+        float fY = getSpatial().getLocalTranslation().getY() / app.getCamera().getHeight();
+        float fW = getDeerWidth() / app.getCamera().getHeight();
+        if (0.05 < fY && fY < 0.2)
+        {
+            // bottom lane, right to left
+            if (0.4 < fX - fW && fX - fW < 0.7)
+            {
+                return true;
+            }
+        } else if (0.3 < fY && fY < 0.5)
+        {
+            // 2nd from bottom, left to right
+            if (0.3 < fX + fW && fX + fW < 0.57)
+            {
+                return true;
+            }
+        } else if (0.55 < fY && fY < 0.65)
+        {
+            // 3rd from bottom, right to left
+            if (0.6 < fX && fX < 0.7)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     enum DeerState
