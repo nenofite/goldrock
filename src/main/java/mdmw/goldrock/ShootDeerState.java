@@ -421,22 +421,30 @@ public class ShootDeerState extends AbstractAppState
 
         // Make some text
         BitmapText titleText = new BitmapText(app.getBigFont());
-        titleText.setSize(app.getGuiFont().getCharSet().getRenderedSize() * 3);
+        titleText.setSize(40);
         titleText.setColor(ColorRGBA.White);
         titleText.setText(titleStr);
+
+        // Make a header
+        BitmapText headerText = new BitmapText(app.getBigItalicFont());
+        headerText.setSize(25);
+        headerText.setColor(ColorRGBA.White);
+        headerText.setText("Title earned:");
 
         // Make a background bar
         Picture bar = new Picture("Title Bar");
         bar.setImage(app.getAssetManager(), "Sprites/text_bar.png", true);
         bar.setWidth(800);
-        bar.setHeight(50);
+        bar.setHeight(80);
 
         // Position the text
         titleText.setLocalTranslation(100, app.getCamera().getHeight() / 2, 10);
+        headerText.setLocalTranslation(100, app.getCamera().getHeight() / 2 + 30, 10);
         bar.setLocalTranslation(0, app.getCamera().getHeight() / 2 - titleText.getHeight(), 5);
 
         Node titleNode = new Node("Title Node");
         titleNode.attachChild(titleText);
+        titleNode.attachChild(headerText);
         titleNode.attachChild(bar);
 
         // Show the text
