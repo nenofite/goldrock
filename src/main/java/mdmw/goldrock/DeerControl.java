@@ -29,7 +29,7 @@ public class DeerControl extends AbstractControl implements Shootable
     private static final long STEP_DELAY = 400;
     private static final String IMG_WALKING = "Sprites/deer.png";
     private static final String IMG_EATING = "Sprites/eating_deer.png";
-    private static final String IMG_DEAD = "Sprites/dead_deer.png";
+    private static final String IMG_DEAD = "Sprites/death.png";
     private Main app;
     private Picture imgHandle;
     private float accrue = 0.0f;
