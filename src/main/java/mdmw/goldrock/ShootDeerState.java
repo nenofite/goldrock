@@ -31,11 +31,15 @@ public class ShootDeerState extends AbstractAppState
      * The number of deer to kill in order to see the MDMW ending
      */
     public static final int MDMW_KILL_COUNT = 1000;
+    private static final String AUDIO_SLOW = "Audio/hunt_slow.wav";
+    private static final String AUDIO_MED = "Audio/hunt_med.wav";
+    private static final String AUDIO_FAST = "Audio/hunt_fast.wav";
     private static final int MAX_DEER_SPAWN_RATE = 3;
     private Main app;
     private Node node;
     private AudioNode gunshot;
     private AudioNode gunReload;
+    private AudioNode music;
     private float until_next_deer = 0.0f;
     private int maxBullets = 3;
     private int bullets;
@@ -101,6 +105,28 @@ public class ShootDeerState extends AbstractAppState
 
         started = System.currentTimeMillis();
 
+        String audioSelection = "";
+        switch (huntNumber)
+        {
+            case 1:
+                audioSelection = AUDIO_SLOW;
+                break;
+            case 2:
+                audioSelection = AUDIO_MED;
+                break;
+            case 3:
+                audioSelection = AUDIO_FAST;
+                break;
+            default:
+                audioSelection = AUDIO_SLOW;
+                break;
+        }
+        music = new AudioNode(app.getAssetManager(), audioSelection, AudioData.DataType.Stream);
+        music.setLooping(true);
+        music.setPositional(false);
+        node.attachChild(music);
+        music.play();
+
         lanes = new ArrayList<>();
         lanes.add(new DeerLane(0.1f, 1.25f, DeerLane.Orientation.LEFT_FACING, 5f, 15f, 30f, 40f, 50f));
         lanes.add(new DeerLane(0.4f, 1f, DeerLane.Orientation.RIGHT_FACING, 1f, 7f, 14f, 21f, 28f, 35f, 42f, 49f, 52f));
@@ -122,6 +148,8 @@ public class ShootDeerState extends AbstractAppState
     public void cleanup()
     {
         super.cleanup();
+
+        music.stop();
 
         // Detach our node
         node.removeFromParent();
