@@ -33,7 +33,7 @@ public class ShootDeerState extends AbstractAppState
      * The number of deer to kill in order to see the MDMW ending
      */
     public static final int MDMW_KILL_COUNT = 10;
-    private static final String AUDIO_SLOW = "Audio/hunt_slow.wav";
+    private static final String AUDIO_SLOW = "Audio/hunt_slow_short.wav";
     private static final String AUDIO_MED = "Audio/hunt_med.wav";
     private static final String AUDIO_FAST = "Audio/hunt_fast.wav";
     private Main app;
