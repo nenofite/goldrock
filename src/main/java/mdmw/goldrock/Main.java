@@ -12,6 +12,8 @@ public class Main extends SimpleApplication
 {
     public static final String NEXT_SCREEN_MAPPING = "Next Screen";
 
+    private BitmapFont bigFont;
+
     public Main()
     {
         AppSettings settings = new AppSettings(true);
@@ -36,6 +38,9 @@ public class Main extends SimpleApplication
         setDisplayStatView(false);
         flyCam.setEnabled(false);
 
+        // Load fonts
+        bigFont = assetManager.loadFont("Fonts/big.fnt");
+
         // Setup mappings
 
         // Map click or spacebar to start or go to next screen (eg. after newspaper)
@@ -58,5 +63,10 @@ public class Main extends SimpleApplication
     public BitmapFont getGuiFont()
     {
         return guiFont;
+    }
+
+    public BitmapFont getBigFont()
+    {
+        return bigFont;
     }
 }

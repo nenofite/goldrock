@@ -6,6 +6,8 @@ import com.jme3.app.state.AppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioData;
 import com.jme3.audio.AudioNode;
+import com.jme3.font.BitmapText;
+import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
@@ -57,6 +59,7 @@ public class ShootDeerState extends AbstractAppState
      */
     private int huntNumber;
     private int activeDeer;
+    private Node titleEarned;
 
     public ShootDeerState(int huntNumber, int prevKillCount)
     {
@@ -340,6 +343,8 @@ public class ShootDeerState extends AbstractAppState
     {
         killCount = 0;
         startedWaitForNextHunt = System.currentTimeMillis();
+
+        awardTitle();
     }
 
 
@@ -349,6 +354,7 @@ public class ShootDeerState extends AbstractAppState
     public void beginNextHunt()
     {
         startedWaitForNextHunt = -1;
+        removeTitle();
 
         if (huntNumber == 3)
         {
@@ -368,6 +374,86 @@ public class ShootDeerState extends AbstractAppState
             setupHunt(++huntNumber);
         }
     }
+
+
+    /**
+     * Display some "Title earned" text based on the round and the kill count
+     */
+    private void awardTitle()
+    {
+        // Pick the title text
+        final String titleStr;
+        // TODO Add title texts based on conditions
+        switch (huntNumber)
+        {
+            case 1:
+                if (totalKillCount < 10)
+                {
+                    titleStr = "1, <10";
+                } else
+                {
+                    titleStr = "1, >10";
+                }
+                break;
+            case 2:
+                if (totalKillCount < 20)
+                {
+                    titleStr = "2, <20";
+                } else
+                {
+                    titleStr = "2, >20";
+                }
+                break;
+            default:
+            case 3:
+                if (totalKillCount < 30)
+                {
+                    titleStr = "3, <30";
+                } else
+                {
+                    titleStr = "3, >30";
+                }
+                break;
+        }
+
+        // Make some text
+        BitmapText titleText = new BitmapText(app.getBigFont());
+        titleText.setSize(app.getGuiFont().getCharSet().getRenderedSize() * 3);
+        titleText.setColor(ColorRGBA.White);
+        titleText.setText(titleStr);
+
+        // Make a background bar
+        Picture bar = new Picture("Title Bar");
+        bar.setImage(app.getAssetManager(), "Sprites/text_bar.png", true);
+        bar.setWidth(800);
+        bar.setHeight(50);
+
+        // Position the text
+        titleText.setLocalTranslation(100, app.getCamera().getHeight() / 2, 10);
+        bar.setLocalTranslation(0, app.getCamera().getHeight() / 2 - titleText.getHeight(), 5);
+
+        Node titleNode = new Node("Title Node");
+        titleNode.attachChild(titleText);
+        titleNode.attachChild(bar);
+
+        // Show the text
+        titleEarned = titleNode;
+        node.attachChild(titleEarned);
+    }
+
+
+    /**
+     * Remove the "Title earned" text
+     */
+    private void removeTitle()
+    {
+        if (titleEarned != null)
+        {
+            titleEarned.removeFromParent();
+            titleEarned = null;
+        }
+    }
+
 
     /**
      * Make the background image
