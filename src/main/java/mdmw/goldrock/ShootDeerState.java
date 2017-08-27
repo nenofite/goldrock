@@ -24,9 +24,9 @@ public class ShootDeerState extends AbstractAppState
      */
     public static final long RELOAD_TIME = 1000;
     /**
-     * How long before the player has to shoot at deer
+     * How long to delay between hunts
      */
-    public static final long TIME_LIMIT = 60 * 1000;
+    public static final long DELAY_BETWEEN_HUNTS = 5 * 1000;
     /**
      * The number of deer to kill in order to see the MDMW ending
      */
@@ -44,10 +44,9 @@ public class ShootDeerState extends AbstractAppState
     private int killCount;
     private int totalKillCount;
     /**
-     * The timestamp of when the player started this phase. We use this to know when the time is up and we move on to
-     * the score screen or to MDMW.
+     * When we finished the previous hunt and started waiting to start the next, or -1 if we're currently hunting
      */
-    private long started;
+    private long startedWaitForNextHunt = -1;
     /**
      * The timestamp when we started reloading, or -1 if we're not reloading
      */
@@ -88,9 +87,6 @@ public class ShootDeerState extends AbstractAppState
         // Add the kill count
         node.attachChild(KillCountControl.makeKillCount(this.app, KillCountControl.KillCountType.TOTAL));
 
-        // Add the countdown timer
-        node.attachChild(CountdownControl.makeCountdown(this.app));
-
         // Add the bullets
         node.attachChild(BulletsControl.makeBullets(this.app));
 
@@ -105,8 +101,6 @@ public class ShootDeerState extends AbstractAppState
 
     private void setupHunt(int huntNumber)
     {
-        started = System.currentTimeMillis();
-
         if (music != null)
         {
             music.stop();
@@ -201,31 +195,40 @@ public class ShootDeerState extends AbstractAppState
         super.update(tpf);
         app.getInputManager().setCursorVisible(false);
 
-        if (activeDeer == 0 && lanes.stream().allMatch(e -> !e.hasDeer()))
+        if (startedWaitForNextHunt != -1)
         {
-            gameOver();
+            if (System.currentTimeMillis() - startedWaitForNextHunt >= DELAY_BETWEEN_HUNTS)
+            {
+                beginNextHunt();
+            }
         } else
         {
-            for (DeerLane lane : lanes)
+            if (activeDeer == 0 && lanes.stream().allMatch(e -> !e.hasDeer()))
             {
-                lane.update(tpf);
-                if (lane.shouldSpawn())
+                finishHunt();
+            } else
+            {
+                for (DeerLane lane : lanes)
                 {
-                    float vertOffset = lane.getVerticalOffset(app.getCamera().getHeight());
-                    Node deer = DeerControl.createDeer(app, lane.getFacingLeft(), lane.getDeerScale());
-                    deer.move(0, vertOffset, 0);
-                    if (lane.getFacingLeft())
+                    lane.update(tpf);
+                    if (lane.shouldSpawn())
                     {
-                        deer.move(app.getCamera().getWidth(), 0, 0);
+                        float vertOffset = lane.getVerticalOffset(app.getCamera().getHeight());
+                        Node deer = DeerControl.createDeer(app, lane.getFacingLeft(), lane.getDeerScale());
+                        deer.move(0, vertOffset, 0);
+                        if (lane.getFacingLeft())
+                        {
+                            deer.move(app.getCamera().getWidth(), 0, 0);
+                        }
+                        node.attachChild(deer);
+                        ++activeDeer;
                     }
-                    node.attachChild(deer);
-                    ++activeDeer;
                 }
-            }
 
-            if (startedReloading != -1 && System.currentTimeMillis() - startedReloading >= RELOAD_TIME)
-            {
-                finishReload();
+                if (startedReloading != -1 && System.currentTimeMillis() - startedReloading >= RELOAD_TIME)
+                {
+                    finishReload();
+                }
             }
         }
     }
@@ -330,9 +333,19 @@ public class ShootDeerState extends AbstractAppState
     /**
      * Run when there are no more deer to kill. This will have a delay, and then put the user into the next hunt.
      */
-    public void gameOver()
+    public void finishHunt()
     {
         killCount = 0;
+        startedWaitForNextHunt = System.currentTimeMillis();
+    }
+
+
+    /**
+     * Begin the next hunt after finishing a delay
+     */
+    public void beginNextHunt()
+    {
+        startedWaitForNextHunt = -1;
 
         if (huntNumber == 3)
         {
@@ -351,14 +364,6 @@ public class ShootDeerState extends AbstractAppState
         {
             setupHunt(++huntNumber);
         }
-    }
-
-    /**
-     * Get how much time the player has left to shoot, in ms
-     */
-    public long getTimeRemaining()
-    {
-        return TIME_LIMIT - (System.currentTimeMillis() - started);
     }
 
     /**
