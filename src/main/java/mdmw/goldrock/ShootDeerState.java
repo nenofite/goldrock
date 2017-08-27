@@ -75,6 +75,9 @@ public class ShootDeerState extends AbstractAppState
         // Add the kill count
         node.attachChild(KillCountControl.makeKillCount(this.app));
 
+        // Add the countdown timer
+        node.attachChild(CountdownControl.makeCountdown(this.app));
+
         // Add the bullets
         node.attachChild(BulletsControl.makeBullets(this.app));
 
@@ -235,6 +238,15 @@ public class ShootDeerState extends AbstractAppState
 
         app.getStateManager().detach(this);
         app.getStateManager().attach(nextState);
+    }
+
+
+    /**
+     * Get how much time the player has left to shoot, in ms
+     */
+    public long getTimeRemaining()
+    {
+        return TIME_LIMIT - (System.currentTimeMillis() - started);
     }
 
     /**
