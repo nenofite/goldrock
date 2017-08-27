@@ -10,7 +10,9 @@ import com.jme3.system.AppSettings;
 
 public class Main extends SimpleApplication
 {
+    public static final boolean IS_DEBUG = true;
     public static final String NEXT_SCREEN_MAPPING = "Next Screen";
+    public static final String SKIP_DEER_MAPPING = "(Debug) Skip Deer";
 
     private BitmapFont bigFont;
     private BitmapFont bigItalicFont;
@@ -52,6 +54,11 @@ public class Main extends SimpleApplication
         // Register the mouse button and the space bar to shoot
         getInputManager().addMapping(ShootDeerState.SHOOT_MAPPING, new MouseButtonTrigger(MouseInput.BUTTON_LEFT),
                 new KeyTrigger(KeyInput.KEY_SPACE));
+
+        if (IS_DEBUG)
+        {
+            getInputManager().addMapping(SKIP_DEER_MAPPING, new KeyTrigger(KeyInput.KEY_F7));
+        }
 
         stateManager.attach(new TitleState());
     }

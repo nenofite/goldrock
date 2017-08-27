@@ -15,8 +15,8 @@ import com.jme3.ui.Picture;
  */
 public class NewspaperControl extends AbstractControl
 {
-    private static final float WIDTH = 400;
-    private static final float HEIGHT = 400;
+    private static final float WIDTH = 700;
+    private static final float HEIGHT = 700;
     private static final long ENTRY_DURATION = 500;
     private Main app;
     private long startedEntry;
