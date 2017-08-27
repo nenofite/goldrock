@@ -33,6 +33,10 @@ public class DeerControl extends AbstractControl
     private Main app;
     private Picture imgHandle;
     private float accrue = 0.0f;
+    /**
+     * The maximum seconds a deer may spend munching in its life
+     */
+    private float munchQuota = 5f;
     private float deerSpeed = 0.0f;
     private DeerState state;
     private AnimationStation currentAnimation;
@@ -146,6 +150,11 @@ public class DeerControl extends AbstractControl
             madeLastStep = System.currentTimeMillis();
         }
 
+        if (DeerState.EATING.equals(state))
+        {
+            munchQuota -= tpf;
+        }
+
         DeerState nextState = state;
         if (state != DeerState.DYING)
         {
@@ -162,6 +171,12 @@ public class DeerControl extends AbstractControl
                     accrue = 0;
                 }
             }
+        }
+
+        if (DeerState.EATING.equals(nextState) && munchQuota <= 0)
+        {
+            System.out.println("Ran out of munch quota: " + this);
+            nextState = DeerState.WALKING;
         }
 
         if (!state.equals(nextState))
