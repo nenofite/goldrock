@@ -193,7 +193,11 @@ public class ShootDeerState extends AbstractAppState
     {
         super.cleanup();
 
-        music.stop();
+        if (music != null)
+        {
+            music.stop();
+            music = null;
+        }
 
         // Detach our node
         Utils.detachAllControls(node);
