@@ -14,15 +14,15 @@ import com.jme3.scene.Node;
  */
 public class NewspaperState extends AbstractAppState implements ActionListener
 {
-    private final int killCount;
+    private final float killFrac;
     private Main app;
     private Node node;
     private AudioNode music;
 
-    public NewspaperState(int killCount)
+    public NewspaperState(float killFrac)
     {
         node = new Node("Newspaper State");
-        this.killCount = killCount;
+        this.killFrac = killFrac;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class NewspaperState extends AbstractAppState implements ActionListener
         this.app.getGuiNode().attachChild(node);
 
         // Make the newspaper
-        node.attachChild(NewspaperControl.makeNewspaper(getNewspaper(killCount), this.app));
+        node.attachChild(NewspaperControl.makeNewspaper(getNewspaper(killFrac), this.app));
 
         // Register as an event listener
         app.getInputManager().addListener(this, Main.NEXT_SCREEN_MAPPING);
@@ -73,17 +73,33 @@ public class NewspaperState extends AbstractAppState implements ActionListener
     /**
      * Get the path of the newspaper image based on the given kill count
      *
-     * @param killCount The number of deers killed
+     * @param killFrac The fraction of all deer that were killed
      * @return The path to an image
      */
-    private String getNewspaper(int killCount)
+    private String getNewspaper(float killFrac)
     {
-        if (killCount < 10)
+        if (killFrac == 0)
         {
-            return "Sprites/newspaper_1.png";
+            return "Sprites/newspaper_zero.png";
+
+        } else if (killFrac < 0.4f)
+        {
+            return "Sprites/newspaper_low.png";
+
+        } else if (killFrac < 0.6f)
+        {
+            return "Sprites/newspaper_medium.png";
+
+        } else if (killFrac < 0.8f)
+        {
+            return "Sprites/newspaper_high.png";
+
+        } else if (killFrac < 1)
+        {
+            return "Sprites/newspaper_veryhigh.png";
         } else
         {
-            return "Sprites/newspaper_2.png";
+            return "Sprites/newspaper_all.png";
         }
     }
 }

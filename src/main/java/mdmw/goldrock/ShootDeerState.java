@@ -373,7 +373,7 @@ public class ShootDeerState extends AbstractAppState
 
         if (huntNumber == 3 && totalKillCount < MDMW_KILL_COUNT)
         {
-            AppState nextState = new NewspaperState(totalKillCount);
+            AppState nextState = new NewspaperState((float) totalKillCount / TOTAL_DEER);
             app.getStateManager().detach(this);
             app.getStateManager().attach(nextState);
         } else
