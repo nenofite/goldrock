@@ -1,5 +1,7 @@
 package mdmw.goldrock;
 
+import com.jme3.audio.AudioData;
+import com.jme3.audio.AudioNode;
 import com.jme3.material.RenderState;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -7,6 +9,9 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.ui.Picture;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Defines logic for controlling deer as they frolick about the forest. If you are kind to them, they will ignore you.
@@ -21,6 +26,7 @@ public class DeerControl extends AbstractControl
     private static final float DEER_MOVEMENT_RUN_MODIFIER = 7f;
     private static final float DEER_MOVEMENT_JUMP_MODIFIER = 14f;
     private static final int DEER_DYING_SPEED = 60;
+    private static final long STEP_DELAY = 400;
     private static final String IMG_WALKING = "Sprites/deer.png";
     private static final String IMG_EATING = "Sprites/eating_deer.png";
     private static final String IMG_DEAD = "Sprites/dead_deer.png";
@@ -30,9 +36,12 @@ public class DeerControl extends AbstractControl
     private float deerSpeed = 0.0f;
     private DeerState state;
     private AnimationStation currentAnimation;
-    private boolean flipped;
+    private boolean goingLeft;
     private float remainingDeathDistance = HEIGHT + 15;
     private float widthScale = 1f;
+    private List<AudioNode> deerStepSounds;
+    private AudioNode jumpSound;
+    private long madeLastStep;
 
     private DeerControl(Main app, Picture imgHandle, boolean facingLeft, float scale)
     {
@@ -41,8 +50,12 @@ public class DeerControl extends AbstractControl
         this.app = app;
         deerSpeed = (float) (Math.random() * (DEER_MOVEMENT_MAX - DEER_MOVEMENT_MIN)) + DEER_MOVEMENT_MIN;
         state = DeerState.RUNNING;
-        flipped = facingLeft;
+        goingLeft = facingLeft;
         currentAnimation = createRunningAnimation();
+
+        // Load the audio nodes
+        initAudio();
+        madeLastStep = System.currentTimeMillis();
     }
 
     /**
@@ -115,6 +128,23 @@ public class DeerControl extends AbstractControl
     @Override
     protected void controlUpdate(float tpf)
     {
+        // Remove the deer if it has moved off screen
+        float x = getSpatial().getLocalTranslation().getX();
+        boolean offLeft = x < 0 && goingLeft;
+        boolean offRight = x > app.getCamera().getWidth() && !goingLeft;
+        if (offLeft || offRight)
+        {
+            System.out.println("Goodbye from " + this);
+            getSpatial().removeFromParent();
+            return;
+        }
+
+        if (DeerState.RUNNING.equals(state) && System.currentTimeMillis() - madeLastStep >= STEP_DELAY)
+        {
+            playStepSound();
+            madeLastStep = System.currentTimeMillis();
+        }
+
         DeerState nextState = state;
         if (shouldJump())
         {
@@ -132,6 +162,9 @@ public class DeerControl extends AbstractControl
 
         if (!state.equals(nextState))
         {
+            // Play a transition sound, if there is one
+            playTransitionSound(state, nextState);
+
             switch (nextState)
             {
                 case RUNNING:
@@ -154,7 +187,7 @@ public class DeerControl extends AbstractControl
         }
 
         currentAnimation.progress(tpf);
-        float directionModifier = (flipped) ? -1 : 1;
+        float directionModifier = (goingLeft) ? -1 : 1;
         switch (state)
         {
             case DYING:
@@ -251,6 +284,82 @@ public class DeerControl extends AbstractControl
 
 
     /**
+     * Play the sound of the deer taking a step. The sound is 3D-located to match the deer's location, with vertical
+     * screen space mapped to 3D depth.
+     */
+    private void playStepSound()
+    {
+        // Pick a random deer step sound
+        int soundIndex = (int) (Math.random() * deerStepSounds.size());
+        playSoundAtLocation(deerStepSounds.get(soundIndex));
+    }
+
+
+    /**
+     * Play the sound of the deer jumping. The sound is 3D-located to match the deer's location, with vertical
+     * screen space mapped to 3D depth.
+     */
+    private void playJumpSound()
+    {
+        playSoundAtLocation(jumpSound);
+    }
+
+
+    /**
+     * Play the sound of the deer landing a jump. The sound is 3D-located to match the deer's location, with vertical
+     * screen space mapped to 3D depth.
+     */
+    private void playLandSound()
+    {
+        // TODO for now we use the same sound as jumping
+        playSoundAtLocation(jumpSound);
+    }
+
+
+    /**
+     * Play a sound at the deer's location using positional audio
+     *
+     * @param sound A sound that must be positional
+     */
+    private void playSoundAtLocation(AudioNode sound)
+    {
+        // Calculate where the sound should be (map Y to Z)
+        Vector3f deerLoc = getSpatial().getLocalTranslation();
+        Vector3f soundLoc = new Vector3f((deerLoc.getX() - app.getCamera().getWidth() / 2),
+                deerLoc.getY(),
+                0);
+
+        // Move the sound node to the location and play the sound
+        sound.setLocalTranslation(soundLoc);
+        sound.playInstance();
+    }
+
+
+    /**
+     * Play a sound effect for transitioning states. For example, this plays a jump sound when transitioning into the
+     * jump state, and plays a landing sound when transitioning out of the jump state.
+     *
+     * @param previousState The state we are leaving
+     * @param nextState     The state we are entering
+     */
+    private void playTransitionSound(DeerState previousState, DeerState nextState)
+    {
+        if (previousState.equals(nextState))
+        {
+            return;
+        }
+
+        if (DeerState.JUMPING.equals(nextState))
+        {
+            playJumpSound();
+        } else if (DeerState.JUMPING.equals(previousState))
+        {
+            playLandSound();
+        }
+    }
+
+
+    /**
      * Check whether the deer is currently in a position where it must be jumping (eg. over a creek)
      *
      * @return True if the deer should be jumping
@@ -284,6 +393,24 @@ public class DeerControl extends AbstractControl
         }
 
         return false;
+    }
+
+
+    private void initAudio()
+    {
+        deerStepSounds = new ArrayList<>();
+        for (int i = 0; i < 5; ++i)
+        {
+            AudioNode sound = new AudioNode(app.getAssetManager(), "Audio/deer_step_" + i + ".wav", AudioData.DataType
+                    .Buffer);
+            sound.setPositional(true);
+            sound.setVolume(2);
+            deerStepSounds.add(sound);
+        }
+
+        jumpSound = new AudioNode(app.getAssetManager(), "Audio/deer_step_0.wav", AudioData.DataType.Buffer);
+        jumpSound.setPositional(true);
+        jumpSound.setVolume(10);
     }
 
     enum DeerState

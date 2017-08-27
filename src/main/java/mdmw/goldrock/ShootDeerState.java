@@ -280,7 +280,6 @@ public class ShootDeerState extends AbstractAppState
         gunshot = new AudioNode(app.getAssetManager(), "Audio/gunshot.wav", AudioData.DataType.Buffer);
         gunshot.setPositional(false);
         gunshot.setVolume(2);
-        gunshot.setPositional(false);
         node.attachChild(gunshot);
 
         gunReload = new AudioNode(app.getAssetManager(), "Audio/gun_reload.wav", AudioData.DataType.Buffer);
