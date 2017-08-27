@@ -34,8 +34,9 @@ public class DeerControl extends AbstractControl
     private float remainingDeathDistance = HEIGHT + 15;
     private float widthScale = 1f;
 
-    private DeerControl(Main app, Picture imgHandle, boolean facingLeft)
+    private DeerControl(Main app, Picture imgHandle, boolean facingLeft, float scale)
     {
+        this.widthScale = scale;
         this.imgHandle = imgHandle;
         this.app = app;
         deerSpeed = (float) (Math.random() * (DEER_MOVEMENT_MAX - DEER_MOVEMENT_MIN)) + DEER_MOVEMENT_MIN;
@@ -50,11 +51,11 @@ public class DeerControl extends AbstractControl
      *
      * @return A deer.
      */
-    public static Node createDeer(Main app, boolean facingLeft)
+    public static Node createDeer(Main app, boolean facingLeft, float scale)
     {
         Node commanderNode = new Node("Deer Commander");
         Picture deer = new Picture("Regular Deer");
-        commanderNode.addControl(new DeerControl(app, deer, facingLeft));
+        commanderNode.addControl(new DeerControl(app, deer, facingLeft, scale));
         commanderNode.setLocalTranslation(0, 0, ShootDeerState.Z_DEER);
 
         deer.setImage(app.getAssetManager(), IMG_WALKING, true);
@@ -66,6 +67,8 @@ public class DeerControl extends AbstractControl
         {
             deer.scale(-1, 1, 1);
         }
+
+        deer.scale(scale);
 
         commanderNode.attachChild(deer);
         return commanderNode;
@@ -158,23 +161,24 @@ public class DeerControl extends AbstractControl
                 imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
                 float speed = Math.min(DEER_DYING_SPEED * tpf, remainingDeathDistance);
                 remainingDeathDistance -= speed;
-                getSpatial().move(new Vector3f(0, -speed, 0));
+                getSpatial().move(new Vector3f(0, -speed * widthScale, 0));
                 break;
             case WALKING:
                 imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
-                getSpatial().move(new Vector3f(directionModifier * deerSpeed * tpf, 0, 0));
+                getSpatial().move(new Vector3f(directionModifier * deerSpeed * tpf * widthScale, 0, 0));
                 break;
             case RUNNING:
                 imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
-                getSpatial().move(new Vector3f(directionModifier * deerSpeed * tpf * DEER_MOVEMENT_RUN_MODIFIER, 0, 0));
+                getSpatial().move(new Vector3f(
+                        directionModifier * deerSpeed * tpf * DEER_MOVEMENT_RUN_MODIFIER * widthScale, 0, 0));
                 break;
             case EATING:
                 imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
                 break;
             case JUMPING:
                 imgHandle.setImage(app.getAssetManager(), currentAnimation.getCurrent(), true);
-                getSpatial()
-                        .move(new Vector3f(directionModifier * deerSpeed * tpf * DEER_MOVEMENT_JUMP_MODIFIER, 0, 0));
+                getSpatial().move(new Vector3f(
+                        directionModifier * deerSpeed * tpf * DEER_MOVEMENT_JUMP_MODIFIER * widthScale, 0, 0));
                 break;
         }
     }

@@ -10,13 +10,15 @@ public class DeerLane
     private Orientation direction;
     private List<Float> spawnTimes;
     private float currentTime;
+    private float deerScale;
 
-    public DeerLane(float verticalFraction, Orientation direction, Float... spawnTimes)
+    public DeerLane(float verticalFraction, float deerScale, Orientation direction, Float... spawnTimes)
     {
         this.verticalFraction = verticalFraction;
         this.direction = direction;
         Arrays.sort(spawnTimes);
         this.spawnTimes = new LinkedList<>(Arrays.asList(spawnTimes));
+        this.deerScale = deerScale;
     }
 
     public void update(float tpf)
@@ -32,6 +34,11 @@ public class DeerLane
             return true;
         }
         return false;
+    }
+
+    public float getDeerScale()
+    {
+        return deerScale;
     }
 
     public float getVerticalOffset(float cameraHeight)

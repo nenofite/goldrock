@@ -31,9 +31,7 @@ public class ShootDeerState extends AbstractAppState
      * The number of deer to kill in order to see the MDMW ending
      */
     public static final int MDMW_KILL_COUNT = 1000;
-
     private static final int MAX_DEER_SPAWN_RATE = 3;
-
     private Main app;
     private Node node;
     private AudioNode gunshot;
@@ -42,7 +40,6 @@ public class ShootDeerState extends AbstractAppState
     private int maxBullets = 3;
     private int bullets;
     private int killCount;
-
     /**
      * The timestamp of when the player started this phase. We use this to know when the time is up and we move on to
      * the score screen or to MDMW.
@@ -73,7 +70,7 @@ public class ShootDeerState extends AbstractAppState
         // Add the background
         node.attachChild(makeBackground());
 
-        //node.attachChild(makeForeground());
+        node.attachChild(makeForeground());
 
         // Add the kill count
         node.attachChild(KillCountControl.makeKillCount(this.app));
@@ -95,10 +92,10 @@ public class ShootDeerState extends AbstractAppState
         started = System.currentTimeMillis();
 
         lanes = new ArrayList<>();
-        lanes.add(new DeerLane(0.1f, DeerLane.Orientation.LEFT_FACING, 5f, 15f, 30f, 40f, 50f));
-        lanes.add(new DeerLane(0.4f, DeerLane.Orientation.RIGHT_FACING, 1f, 7f, 14f, 21f, 28f, 35f, 42f, 49f, 52f));
-        lanes.add(new DeerLane(0.6f, DeerLane.Orientation.LEFT_FACING, 3f, 5f, 50f));
-        lanes.add(new DeerLane(0.85f, DeerLane.Orientation.RIGHT_FACING, 3f, 5f, 50f));
+        lanes.add(new DeerLane(0.1f, 1.25f, DeerLane.Orientation.LEFT_FACING, 5f, 15f, 30f, 40f, 50f));
+        lanes.add(new DeerLane(0.4f, 1f, DeerLane.Orientation.RIGHT_FACING, 1f, 7f, 14f, 21f, 28f, 35f, 42f, 49f, 52f));
+        lanes.add(new DeerLane(0.6f, 0.75f, DeerLane.Orientation.LEFT_FACING, 3f, 5f, 50f));
+        lanes.add(new DeerLane(0.85f, 0.6f, DeerLane.Orientation.RIGHT_FACING, 3f, 5f, 50f));
     }
 
     private Spatial makeForeground()
@@ -132,7 +129,7 @@ public class ShootDeerState extends AbstractAppState
             if (lane.shouldSpawn())
             {
                 float vertOffset = lane.getVerticalOffset(app.getCamera().getHeight());
-                Node deer = DeerControl.createDeer(app, lane.getFacingLeft());
+                Node deer = DeerControl.createDeer(app, lane.getFacingLeft(), lane.getDeerScale());
                 deer.move(0, vertOffset, 0);
                 if (lane.getFacingLeft())
                 {
@@ -252,7 +249,6 @@ public class ShootDeerState extends AbstractAppState
         app.getStateManager().attach(nextState);
     }
 
-
     /**
      * Get how much time the player has left to shoot, in ms
      */
@@ -269,7 +265,7 @@ public class ShootDeerState extends AbstractAppState
     private Spatial makeBackground()
     {
         Picture bg = new Picture("Background");
-        bg.setImage(app.getAssetManager(), "Sprites/DeerPaths.jpg", true);
+        bg.setImage(app.getAssetManager(), "Sprites/BG.png", true);
         bg.setWidth(app.getCamera().getWidth());
         bg.setHeight(app.getCamera().getHeight());
         bg.setLocalTranslation(0, 0, Z_BACKGROUND);
