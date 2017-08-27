@@ -36,6 +36,11 @@ public class DeerLane
         return false;
     }
 
+    public boolean hasDeer()
+    {
+        return !spawnTimes.isEmpty();
+    }
+
     public float getDeerScale()
     {
         return deerScale;

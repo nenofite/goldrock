@@ -1,7 +1,5 @@
 package mdmw.goldrock;
 
-import com.jme3.asset.AssetManager;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +28,7 @@ public class AnimationStation
     /**
      * Creates a duplicate of the given AnimationStation, starting from the beginning of the given animation.
      *
-     * @param base
+     * @param base The AnimationStation from which to copy.
      */
     public AnimationStation(AnimationStation base)
     {
@@ -43,7 +41,7 @@ public class AnimationStation
     /**
      * Gets the path for the current image to be displayed by the tracked animation.
      *
-     * @return
+     * @return A path to the current image for the animation.
      */
     public String getCurrent()
     {

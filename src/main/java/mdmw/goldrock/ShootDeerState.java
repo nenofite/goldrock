@@ -12,6 +12,7 @@ import com.jme3.ui.Picture;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class ShootDeerState extends AbstractAppState
 {
@@ -34,13 +35,11 @@ public class ShootDeerState extends AbstractAppState
     private static final String AUDIO_SLOW = "Audio/hunt_slow.wav";
     private static final String AUDIO_MED = "Audio/hunt_med.wav";
     private static final String AUDIO_FAST = "Audio/hunt_fast.wav";
-    private static final int MAX_DEER_SPAWN_RATE = 3;
     private Main app;
     private Node node;
     private AudioNode gunshot;
     private AudioNode gunReload;
     private AudioNode music;
-    private float until_next_deer = 0.0f;
     private int maxBullets = 3;
     private int bullets;
     private int killCount;
@@ -59,6 +58,7 @@ public class ShootDeerState extends AbstractAppState
      * The number of hunts we have been on, including this one.
      */
     private int huntNumber;
+    private int activeDeer;
 
     public ShootDeerState(int huntNumber, int prevKillCount)
     {
@@ -101,11 +101,9 @@ public class ShootDeerState extends AbstractAppState
         // Attach our node
         this.app.getGuiNode().attachChild(node);
 
-        until_next_deer = (float) (Math.random() * MAX_DEER_SPAWN_RATE);
-
         started = System.currentTimeMillis();
 
-        String audioSelection = "";
+        String audioSelection;
         switch (huntNumber)
         {
             case 1:
@@ -127,11 +125,76 @@ public class ShootDeerState extends AbstractAppState
         node.attachChild(music);
         music.play();
 
+        prepareFirstHunt();
+    }
+
+    private void setupHunt(int huntNumber)
+    {
+        if (music != null)
+        {
+            music.stop();
+            node.detachChild(music);
+            music = null;
+        }
+        switch (huntNumber)
+        {
+            case 1:
+                music = new AudioNode(app.getAssetManager(), AUDIO_SLOW, AudioData.DataType.Stream);
+                prepareFirstHunt();
+                break;
+            case 2:
+                music = new AudioNode(app.getAssetManager(), AUDIO_MED, AudioData.DataType.Stream);
+                prepareSecondHunt();
+                break;
+            case 3:
+                music = new AudioNode(app.getAssetManager(), AUDIO_FAST, AudioData.DataType.Stream);
+                prepareThirdHunt();
+                break;
+            default:
+                throw new IllegalStateException("Only three hunts!");
+        }
+        music.setLooping(true);
+        music.setPositional(false);
+        node.attachChild(music);
+        music.play();
+    }
+
+    private void prepareFirstHunt()
+    {
+        // total deer: 13
         lanes = new ArrayList<>();
-        lanes.add(new DeerLane(0.1f, 1.25f, DeerLane.Orientation.LEFT_FACING, 5f, 15f, 30f, 40f, 50f));
-        lanes.add(new DeerLane(0.4f, 1f, DeerLane.Orientation.RIGHT_FACING, 1f, 7f, 14f, 21f, 28f, 35f, 42f, 49f, 52f));
-        lanes.add(new DeerLane(0.6f, 0.75f, DeerLane.Orientation.LEFT_FACING, 3f, 5f, 50f));
-        lanes.add(new DeerLane(0.85f, 0.6f, DeerLane.Orientation.RIGHT_FACING, 3f, 5f, 50f));
+        lanes.add(new DeerLane(0.1f, 1.25f, DeerLane.Orientation.LEFT_FACING, 5f, 15f)); // 2 deer
+        lanes.add(new DeerLane(0.4f, 1f, DeerLane.Orientation.RIGHT_FACING, 0.5f, 7f, 14f, 21f)); // 4 deer
+        lanes.add(new DeerLane(0.6f, 0.75f, DeerLane.Orientation.LEFT_FACING, 2f, 5f, 20f)); // 3 deer
+        lanes.add(new DeerLane(0.85f, 0.6f, DeerLane.Orientation.RIGHT_FACING, 3f, 5f, 15f, 25f)); // 4 deer
+    }
+
+    private void prepareSecondHunt()
+    {
+        // total deer: 22
+        lanes = new ArrayList<>();
+        lanes.add(new DeerLane(0.1f, 1.25f, DeerLane.Orientation.LEFT_FACING, 1f, 5f, 7f, 13f, 15f, 20f, 24f)); // 7
+        // deer
+        lanes.add(new DeerLane(0.4f, 1f, DeerLane.Orientation.RIGHT_FACING, 0.5f, 7f, 14f, 21f)); // 4 deer
+        lanes.add(new DeerLane(0.6f, 0.75f, DeerLane.Orientation.LEFT_FACING, 2f, 5f, 11f, 18f, 20f, 23f)); // 6 deer
+        lanes.add(new DeerLane(0.85f, 0.6f, DeerLane.Orientation.RIGHT_FACING, 3f, 5f, 15f, 20f, 25f)); // 5 deer
+    }
+
+    private void prepareThirdHunt()
+    {
+        // total deer: 39
+        lanes = new ArrayList<>();
+        lanes.add(new DeerLane(0.1f, 1.25f, DeerLane.Orientation.LEFT_FACING, 1f, 5f, 7f, 12f, 13f, 15f, 20f, 24f));
+        // 8 deer
+        lanes.add(new DeerLane(0.4f, 1f, DeerLane.Orientation.RIGHT_FACING, 0.5f, 1f, 6f, 7f, 12f, 14f, 21f, 24f));
+        // 8 deer
+        lanes.add(new DeerLane(0.6f, 0.75f, DeerLane.Orientation.LEFT_FACING, 2f, 5f, 11f, 15f, 18f, 20f, 23f, 25f));
+        // 8 deer
+        lanes.add(new DeerLane(0.62f, 0.73f, DeerLane.Orientation.RIGHT_FACING, 3f, 2f, 9f, 12f, 16f, 20f, 23f,
+                25f));
+        // 8 deer
+        lanes.add(new DeerLane(0.85f, 0.6f, DeerLane.Orientation.RIGHT_FACING, 3f, 5f, 10f, 12f, 15f, 20f, 25f));
+        // 7 deer
     }
 
     private Spatial makeForeground()
@@ -161,30 +224,33 @@ public class ShootDeerState extends AbstractAppState
         super.update(tpf);
         app.getInputManager().setCursorVisible(false);
 
-        for (DeerLane lane : lanes)
-        {
-            lane.update(tpf);
-            if (lane.shouldSpawn())
-            {
-                float vertOffset = lane.getVerticalOffset(app.getCamera().getHeight());
-                Node deer = DeerControl.createDeer(app, lane.getFacingLeft(), lane.getDeerScale());
-                deer.move(0, vertOffset, 0);
-                if (lane.getFacingLeft())
-                {
-                    deer.move(app.getCamera().getWidth(), 0, 0);
-                }
-                node.attachChild(deer);
-            }
-        }
-
-        if (startedReloading != -1 && System.currentTimeMillis() - startedReloading >= RELOAD_TIME)
-        {
-            finishReload();
-        }
-
-        if (System.currentTimeMillis() - started >= TIME_LIMIT)
+        if (activeDeer == 0 && lanes.stream().allMatch(e -> !e.hasDeer()))
         {
             gameOver();
+        }
+        else
+        {
+            for (DeerLane lane : lanes)
+            {
+                lane.update(tpf);
+                if (lane.shouldSpawn())
+                {
+                    float vertOffset = lane.getVerticalOffset(app.getCamera().getHeight());
+                    Node deer = DeerControl.createDeer(app, lane.getFacingLeft(), lane.getDeerScale());
+                    deer.move(0, vertOffset, 0);
+                    if (lane.getFacingLeft())
+                    {
+                        deer.move(app.getCamera().getWidth(), 0, 0);
+                    }
+                    node.attachChild(deer);
+                    ++activeDeer;
+                }
+            }
+
+            if (startedReloading != -1 && System.currentTimeMillis() - startedReloading >= RELOAD_TIME)
+            {
+                finishReload();
+            }
         }
     }
 
@@ -195,6 +261,16 @@ public class ShootDeerState extends AbstractAppState
     {
         ++killCount;
         ++totalKillCount;
+        notifyDeerRemoved();
+    }
+
+    /**
+     * Call only when removing a deer from the play field. This is used to determine when the hunt ends, and relies
+     * on trust alone.
+     */
+    public void notifyDeerRemoved()
+    {
+        --activeDeer;
     }
 
     public Node getNode()
@@ -276,21 +352,30 @@ public class ShootDeerState extends AbstractAppState
     }
 
     /**
-     * Run when the timer runs out. This will either send the player to the newspaper screen or to the MDMW
+     * Run when there are no more deer to kill. This will have a delay, and then put the user into the next hunt.
      */
     public void gameOver()
     {
-        AppState nextState;
-        if (killCount < MDMW_KILL_COUNT)
-        {
-            nextState = new NewspaperState(totalKillCount, huntNumber);
-        } else
-        {
-            nextState = /* TODO MDMW */ null;
-        }
+        killCount = 0;
 
-        app.getStateManager().detach(this);
-        app.getStateManager().attach(nextState);
+        if (huntNumber == 3)
+        {
+            AppState nextState;
+            if (killCount < MDMW_KILL_COUNT)
+            {
+                nextState = new NewspaperState(totalKillCount, huntNumber);
+            } else
+            {
+                nextState = /* TODO MDMW */ null;
+            }
+
+            app.getStateManager().detach(this);
+            app.getStateManager().attach(nextState);
+        }
+        else
+        {
+            setupHunt(++huntNumber);
+        }
     }
 
     /**

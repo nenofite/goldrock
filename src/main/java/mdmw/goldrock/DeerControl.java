@@ -136,6 +136,7 @@ public class DeerControl extends AbstractControl
         {
             System.out.println("Goodbye from " + this);
             getSpatial().removeFromParent();
+            app.getStateManager().getState(ShootDeerState.class).notifyDeerRemoved();
             return;
         }
 
@@ -279,12 +280,10 @@ public class DeerControl extends AbstractControl
         }
     }
 
-
     private float getDeerWidth()
     {
         return WIDTH * widthScale;
     }
-
 
     /**
      * Play the sound of the deer taking a step. The sound is 3D-located to match the deer's location, with vertical
@@ -297,7 +296,6 @@ public class DeerControl extends AbstractControl
         playSoundAtLocation(deerStepSounds.get(soundIndex));
     }
 
-
     /**
      * Play the sound of the deer jumping. The sound is 3D-located to match the deer's location, with vertical
      * screen space mapped to 3D depth.
@@ -306,7 +304,6 @@ public class DeerControl extends AbstractControl
     {
         playSoundAtLocation(jumpSound);
     }
-
 
     /**
      * Play the sound of the deer landing a jump. The sound is 3D-located to match the deer's location, with vertical
@@ -318,7 +315,6 @@ public class DeerControl extends AbstractControl
         playSoundAtLocation(jumpSound);
     }
 
-
     /**
      * Play a sound at the deer's location using positional audio
      *
@@ -328,15 +324,12 @@ public class DeerControl extends AbstractControl
     {
         // Calculate where the sound should be (map Y to Z)
         Vector3f deerLoc = getSpatial().getLocalTranslation();
-        Vector3f soundLoc = new Vector3f((deerLoc.getX() - app.getCamera().getWidth() / 2),
-                deerLoc.getY(),
-                0);
+        Vector3f soundLoc = new Vector3f((deerLoc.getX() - app.getCamera().getWidth() / 2), deerLoc.getY(), 0);
 
         // Move the sound node to the location and play the sound
         sound.setLocalTranslation(soundLoc);
         sound.playInstance();
     }
-
 
     /**
      * Play a sound effect for transitioning states. For example, this plays a jump sound when transitioning into the
@@ -360,7 +353,6 @@ public class DeerControl extends AbstractControl
             playLandSound();
         }
     }
-
 
     /**
      * Check whether the deer is currently in a position where it must be jumping (eg. over a creek)
@@ -398,14 +390,13 @@ public class DeerControl extends AbstractControl
         return false;
     }
 
-
     private void initAudio()
     {
         deerStepSounds = new ArrayList<>();
         for (int i = 0; i < 5; ++i)
         {
-            AudioNode sound = new AudioNode(app.getAssetManager(), "Audio/deer_step_" + i + ".wav", AudioData.DataType
-                    .Buffer);
+            AudioNode sound =
+                    new AudioNode(app.getAssetManager(), "Audio/deer_step_" + i + ".wav", AudioData.DataType.Buffer);
             sound.setPositional(true);
             sound.setVolume(2);
             deerStepSounds.add(sound);
