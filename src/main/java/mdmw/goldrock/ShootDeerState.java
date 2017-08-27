@@ -33,6 +33,10 @@ public class ShootDeerState extends AbstractAppState
      * The number of deer to kill in order to see the MDMW ending
      */
     public static final int MDMW_KILL_COUNT = 10;
+    /**
+     * The total deer across all rounds
+     */
+    public static final int TOTAL_DEER = 13 + 22 + 39;
     private static final String AUDIO_SLOW = "Audio/hunt_slow_short.wav";
     private static final String AUDIO_MED = "Audio/hunt_med.wav";
     private static final String AUDIO_FAST = "Audio/hunt_fast.wav";
@@ -393,37 +397,34 @@ public class ShootDeerState extends AbstractAppState
     {
         // Pick the title text
         final String titleStr;
-        // TODO Add title texts based on conditions
-        switch (huntNumber)
+        float fracKilled = (float) totalKillCount / TOTAL_DEER;
+        if (fracKilled == 0)
         {
-            case 1:
-                if (totalKillCount < 10)
-                {
-                    titleStr = "1, <10";
-                } else
-                {
-                    titleStr = "1, >10";
-                }
-                break;
-            case 2:
-                if (totalKillCount < 20)
-                {
-                    titleStr = "2, <20";
-                } else
-                {
-                    titleStr = "2, >20";
-                }
-                break;
-            default:
-            case 3:
-                if (totalKillCount < 30)
-                {
-                    titleStr = "3, <30";
-                } else
-                {
-                    titleStr = "3, >30";
-                }
-                break;
+            if (huntNumber == 3)
+            {
+                titleStr = "Friend of the Deer";
+            } else
+            {
+                titleStr = "No title earned.";
+            }
+        } else if (fracKilled <= 0.2f)
+        {
+            titleStr = "Beginner Hunter";
+        } else if (fracKilled <= 0.4f)
+        {
+            titleStr = "Hobbyist Hunter";
+        } else if (fracKilled <= 0.6f)
+        {
+            titleStr = "Competent Hunter";
+        } else if (fracKilled <= 0.8f)
+        {
+            titleStr = "Legendary Hunter";
+        } else if (fracKilled < 1)
+        {
+            titleStr = "Deer Murderer";
+        } else
+        {
+            titleStr = "Oh God Why";
         }
 
         // Make some text
