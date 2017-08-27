@@ -90,6 +90,9 @@ public class ShootDeerState extends AbstractAppState
         // Add the bullets
         node.attachChild(BulletsControl.makeBullets(this.app));
 
+        // Add the text background bar
+        node.attachChild(makeTextBar());
+
         // Load the audio
         initAudio();
 
@@ -396,5 +399,24 @@ public class ShootDeerState extends AbstractAppState
         gunReload.setVolume(2);
         gunReload.setPositional(false);
         node.attachChild(gunReload);
+    }
+
+
+    /**
+     * Make the translucent dark bar that serves as a background for the kill count text
+     */
+    private Spatial makeTextBar()
+    {
+        final float width = 800;
+        final float height = 50;
+
+        Picture bar = new Picture("Text Bar");
+        bar.setImage(app.getAssetManager(), "Sprites/text_bar.png", true);
+        bar.setWidth(width);
+        bar.setHeight(height);
+
+        bar.setLocalTranslation(0, app.getCamera().getHeight() - height, 5);
+
+        return bar;
     }
 }

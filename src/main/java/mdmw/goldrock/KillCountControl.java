@@ -28,14 +28,14 @@ public class KillCountControl extends AbstractControl
     {
         BitmapText text = new BitmapText(app.getGuiFont());
         text.setSize(app.getGuiFont().getCharSet().getRenderedSize());
-        text.setColor(ColorRGBA.Black);
+        text.setColor(ColorRGBA.White);
 
         Node node = new Node("Kill Count");
         node.attachChild(text);
         node.addControl(new KillCountControl(text, app, type));
         float xLocationMod = (type == KillCountType.TOTAL) ? 2f : 1f;
         node.setLocalTranslation(app.getCamera().getWidth() * xLocationMod / 3f,
-                app.getCamera().getHeight() - text.getHeight() - 10, 10);
+                app.getCamera().getHeight() - text.getHeight() + 5, 10);
         return node;
     }
 
@@ -47,17 +47,17 @@ public class KillCountControl extends AbstractControl
         {
             return;
         }
-        String v = "";
+        String v;
         switch (type)
         {
             case HUNT:
-                v += shootDeerState.getKillCount();
+                v = "Score: " + shootDeerState.getKillCount();
                 break;
             case TOTAL:
-                v += shootDeerState.getTotalKillCount();
+                v = "Total Score: " + shootDeerState.getTotalKillCount();
                 break;
             default:
-                v = "-1";
+                v = "";
                 break;
         }
         text.setText(v);
