@@ -66,7 +66,7 @@ public class NewspaperState extends AbstractAppState implements ActionListener
         {
             // Move on to the next screen
             app.getStateManager().detach(this);
-            app.getStateManager().attach(new ShootDeerState(intermissionNumber + 1, killCount));
+            app.getStateManager().attach(new ShootDeerState(1, 0));
         }
     }
 
