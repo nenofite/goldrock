@@ -238,7 +238,8 @@ public class DeerControl extends AbstractControl
     private AnimationStation createWalkingAnimation()
     {
         AnimationStation stat = new AnimationStation();
-        stat.addImage(IMG_WALKING, 1.0f);
+        stat.addImage("Sprites/walking_0.png", 0.4f);
+        stat.addImage("Sprites/walking_1.png", 0.4f);
         return stat;
     }
 
@@ -252,7 +253,8 @@ public class DeerControl extends AbstractControl
     private AnimationStation createEatingAnimation()
     {
         AnimationStation stat = new AnimationStation();
-        stat.addImage(IMG_EATING, 1.0f);
+        stat.addImage("Sprites/eating_0.png", 0.3f);
+        stat.addImage("Sprites/eating_1.png", 0.6f);
         return stat;
     }
 
