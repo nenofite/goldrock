@@ -18,9 +18,13 @@ public class NewspaperControl extends AbstractControl
     private static final float WIDTH = 400;
     private static final float HEIGHT = 400;
     private static final long ENTRY_DURATION = 500;
-
     private Main app;
     private long startedEntry;
+
+    private NewspaperControl(Main app)
+    {
+        this.app = app;
+    }
 
     public static Spatial makeNewspaper(String path, Main app)
     {
@@ -35,11 +39,6 @@ public class NewspaperControl extends AbstractControl
         node.addControl(new NewspaperControl(app));
         node.setLocalTranslation(app.getCamera().getWidth() / 2, app.getCamera().getHeight() / 2, 0);
         return node;
-    }
-
-    private NewspaperControl(Main app)
-    {
-        this.app = app;
     }
 
     @Override

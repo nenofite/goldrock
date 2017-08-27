@@ -14,9 +14,9 @@ import com.jme3.scene.Node;
  */
 public class NewspaperState extends AbstractAppState implements ActionListener
 {
+    private final int killCount;
     private Main app;
     private Node node;
-    private final int killCount;
     private AudioNode music;
     private int intermissionNumber;
 

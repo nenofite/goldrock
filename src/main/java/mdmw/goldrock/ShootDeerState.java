@@ -12,7 +12,6 @@ import com.jme3.ui.Picture;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class ShootDeerState extends AbstractAppState
 {
@@ -190,8 +189,7 @@ public class ShootDeerState extends AbstractAppState
         // 8 deer
         lanes.add(new DeerLane(0.6f, 0.75f, DeerLane.Orientation.LEFT_FACING, 2f, 5f, 11f, 15f, 18f, 20f, 23f, 25f));
         // 8 deer
-        lanes.add(new DeerLane(0.62f, 0.73f, DeerLane.Orientation.RIGHT_FACING, 3f, 2f, 9f, 12f, 16f, 20f, 23f,
-                25f));
+        lanes.add(new DeerLane(0.62f, 0.73f, DeerLane.Orientation.RIGHT_FACING, 3f, 2f, 9f, 12f, 16f, 20f, 23f, 25f));
         // 8 deer
         lanes.add(new DeerLane(0.85f, 0.6f, DeerLane.Orientation.RIGHT_FACING, 3f, 5f, 10f, 12f, 15f, 20f, 25f));
         // 7 deer
@@ -227,8 +225,7 @@ public class ShootDeerState extends AbstractAppState
         if (activeDeer == 0 && lanes.stream().allMatch(e -> !e.hasDeer()))
         {
             gameOver();
-        }
-        else
+        } else
         {
             for (DeerLane lane : lanes)
             {
@@ -371,8 +368,7 @@ public class ShootDeerState extends AbstractAppState
 
             app.getStateManager().detach(this);
             app.getStateManager().attach(nextState);
-        }
-        else
+        } else
         {
             setupHunt(++huntNumber);
         }

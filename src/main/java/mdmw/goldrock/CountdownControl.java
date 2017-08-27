@@ -16,6 +16,12 @@ public class CountdownControl extends AbstractControl
     private Main app;
     private BitmapText text;
 
+    public CountdownControl(BitmapText text, Main app)
+    {
+        this.text = text;
+        this.app = app;
+    }
+
     public static Spatial makeCountdown(Main app)
     {
         BitmapText text = new BitmapText(app.getGuiFont());
@@ -27,12 +33,6 @@ public class CountdownControl extends AbstractControl
         node.addControl(new CountdownControl(text, app));
         node.setLocalTranslation(0, app.getCamera().getHeight() - text.getHeight() - 10, 10);
         return node;
-    }
-
-    public CountdownControl(BitmapText text, Main app)
-    {
-        this.text = text;
-        this.app = app;
     }
 
     @Override

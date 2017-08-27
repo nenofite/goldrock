@@ -26,6 +26,11 @@ public class CrosshairControl extends AbstractControl implements ActionListener
     private static final float SPEED = 4500;
     private Main app;
 
+    private CrosshairControl(Main app)
+    {
+        this.app = app;
+    }
+
     /**
      * Make a crosshair sprite and attach a new control to it.
      *
@@ -44,11 +49,6 @@ public class CrosshairControl extends AbstractControl implements ActionListener
         result.attachChild(crosshair);
         result.addControl(new CrosshairControl(app));
         return result;
-    }
-
-    private CrosshairControl(Main app)
-    {
-        this.app = app;
     }
 
     @Override
@@ -139,7 +139,8 @@ public class CrosshairControl extends AbstractControl implements ActionListener
         try
         {
             p = ir.getPixel(x, y);
-        } catch (IllegalArgumentException e)
+        }
+        catch (IllegalArgumentException e)
         {
             // The x and y were outside the image; this means nothing was hit
             p = new ColorRGBA(0, 0, 0, 0);

@@ -17,11 +17,18 @@ public class BulletsControl extends AbstractControl
 {
     private static final float WIDTH = 71;
     private static final float HEIGHT = 72;
-
     private Main app;
     private Node node;
     private List<Picture> bullets;
     private List<Picture> empties;
+
+    private BulletsControl(Node node, Main app)
+    {
+        this.app = app;
+        this.node = node;
+        bullets = new ArrayList<>();
+        empties = new ArrayList<>();
+    }
 
     /**
      * Make the bullets indicator, which is a node containing many images
@@ -31,14 +38,6 @@ public class BulletsControl extends AbstractControl
         Node node = new Node("Bullets");
         node.addControl(new BulletsControl(node, app));
         return node;
-    }
-
-    private BulletsControl(Node node, Main app)
-    {
-        this.app = app;
-        this.node = node;
-        bullets = new ArrayList<>();
-        empties = new ArrayList<>();
     }
 
     @Override

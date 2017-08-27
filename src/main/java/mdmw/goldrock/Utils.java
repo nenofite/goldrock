@@ -9,7 +9,6 @@ public final class Utils
     {
     }
 
-
     /**
      * Check if any parent of this spatial has the given control and return if it does. Otherwise return null.
      * This can be used for extracting DeerControls from deer picture geometries, for example.

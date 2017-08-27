@@ -12,11 +12,6 @@ public class Main extends SimpleApplication
 {
     public static final String NEXT_SCREEN_MAPPING = "Next Screen";
 
-    public static void main(String[] args)
-    {
-        new Main().start();
-    }
-
     public Main()
     {
         AppSettings settings = new AppSettings(true);
@@ -28,6 +23,11 @@ public class Main extends SimpleApplication
         setShowSettings(false);
         setPauseOnLostFocus(false);
         setDisplayFps(false);
+    }
+
+    public static void main(String[] args)
+    {
+        new Main().start();
     }
 
     @Override
