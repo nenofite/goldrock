@@ -39,6 +39,10 @@ public class TitleState extends AbstractAppState implements ActionListener
         // Attach our node
         this.app.getGuiNode().attachChild(node);
 
+        Spatial titleDeer = TitleDeerControl.createTitleDeer((Main) app);
+        node.attachChild(titleDeer);
+        titleDeer.setLocalTranslation(400, 200, 5);
+
         // Make the music node
         music = new AudioNode(app.getAssetManager(), "Audio/Menu theme.wav", AudioData.DataType.Stream);
         music.setLooping(true);
