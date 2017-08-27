@@ -1,7 +1,10 @@
 package mdmw.goldrock;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.audio.AudioData;
+import com.jme3.audio.AudioNode;
 import com.jme3.material.RenderState;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
@@ -19,6 +22,8 @@ public class MdmwControl extends AbstractControl implements Shootable
     private Main app;
     private Picture imgHandle;
     private AnimationStation animation;
+    private AudioNode growlSound;
+    private AudioNode snarlSound;
     private int lap;
     private float remainingRegenDelay;
     private int health;
@@ -65,6 +70,20 @@ public class MdmwControl extends AbstractControl implements Shootable
                 0);
 
         return node;
+    }
+
+    @Override
+    public void setSpatial(Spatial spatial)
+    {
+        super.setSpatial(spatial);
+        if (spatial != null)
+        {
+            // Make the sound effect nodes
+            initAudio();
+        } else
+        {
+
+        }
     }
 
     private static Picture createPicture(AssetManager assetManager)
@@ -126,6 +145,7 @@ public class MdmwControl extends AbstractControl implements Shootable
         {
             System.out.println("MDMW completed a lap");
             // TODO howl and shake and stuff
+            playSoundAtLocation(growlSound);
             imgHandle.removeFromParent();
             remainingRegenDelay = BASE_REGEN_DELAY - tpf;
 
@@ -140,6 +160,9 @@ public class MdmwControl extends AbstractControl implements Shootable
         {
             if (imgHandle == null)
             {
+                // Start a new lap with a snarl
+                playSoundAtLocation(snarlSound);
+
                 lap += 1;
                 imgHandle = createPicture(app.getAssetManager());
                 ((Node) getSpatial()).attachChild(imgHandle);
@@ -184,5 +207,36 @@ public class MdmwControl extends AbstractControl implements Shootable
             System.out.println("MDMW should die.");
             animation = createDeathAnimation();
         }
+    }
+
+
+    /**
+     * Make the sound effect nodes
+     */
+    private void initAudio()
+    {
+        snarlSound = new AudioNode(app.getAssetManager(), "Audio/mdmw_snarl.wav", AudioData.DataType.Buffer);
+        snarlSound.setPositional(true);
+        snarlSound.setVolume(16);
+
+        growlSound = new AudioNode(app.getAssetManager(), "Audio/mdmw_growl.wav", AudioData.DataType.Buffer);
+        growlSound.setPositional(true);
+        growlSound.setVolume(16);
+    }
+
+    /**
+     * Play a sound at the wolf's location using positional audio
+     *
+     * @param sound A sound that must be positional
+     */
+    private void playSoundAtLocation(AudioNode sound)
+    {
+        // Calculate where the sound should be (map Y to Z)
+        Vector3f deerLoc = getSpatial().getLocalTranslation();
+        Vector3f soundLoc = new Vector3f((deerLoc.getX() - app.getCamera().getWidth() / 2), deerLoc.getY(), 0);
+
+        // Move the sound node to the location and play the sound
+        sound.setLocalTranslation(soundLoc);
+        sound.playInstance();
     }
 }
