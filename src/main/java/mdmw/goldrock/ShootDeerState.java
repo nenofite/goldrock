@@ -40,6 +40,7 @@ public class ShootDeerState extends AbstractAppState
     private int maxBullets = 3;
     private int bullets;
     private int killCount;
+    private int totalKillCount;
     /**
      * The timestamp of when the player started this phase. We use this to know when the time is up and we move on to
      * the score screen or to MDMW.
@@ -50,11 +51,17 @@ public class ShootDeerState extends AbstractAppState
      */
     private long startedReloading;
     private List<DeerLane> lanes;
+    /**
+     * The number of hunts we have been on, including this one.
+     */
+    private int huntNumber;
 
-    public ShootDeerState()
+    public ShootDeerState(int huntNumber, int prevKillCount)
     {
         node = new Node("ShootDeerState");
         bullets = maxBullets;
+        this.huntNumber = huntNumber;
+        totalKillCount = prevKillCount;
     }
 
     @Override
@@ -156,6 +163,7 @@ public class ShootDeerState extends AbstractAppState
     public void onKillDeer()
     {
         ++killCount;
+        ++totalKillCount;
     }
 
     public Node getNode()
@@ -166,6 +174,11 @@ public class ShootDeerState extends AbstractAppState
     public int getKillCount()
     {
         return killCount;
+    }
+
+    public int getTotalKillCount()
+    {
+        return totalKillCount;
     }
 
     public int getMaxBullets()
@@ -239,7 +252,7 @@ public class ShootDeerState extends AbstractAppState
         AppState nextState;
         if (killCount < MDMW_KILL_COUNT)
         {
-            nextState = new NewspaperState(killCount);
+            nextState = new NewspaperState(totalKillCount, huntNumber);
         } else
         {
             nextState = /* TODO MDMW */ null;

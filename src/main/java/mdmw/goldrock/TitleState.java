@@ -40,7 +40,7 @@ public class TitleState extends AbstractAppState implements ActionListener
         this.app.getGuiNode().attachChild(node);
 
         // Make the music node
-        music = new AudioNode(app.getAssetManager(), "Audio/victory_music.wav", AudioData.DataType.Stream);
+        music = new AudioNode(app.getAssetManager(), "Audio/Menu theme.wav", AudioData.DataType.Stream);
         music.setLooping(true);
         music.setPositional(false);
         node.attachChild(music);
@@ -68,10 +68,9 @@ public class TitleState extends AbstractAppState implements ActionListener
         {
             // Switch to shoot deer state
             app.getStateManager().detach(this);
-            app.getStateManager().attach(new ShootDeerState());
+            app.getStateManager().attach(new ShootDeerState(1, 0));
         }
     }
-
 
     /**
      * Make the title picture background, which displays the title of the game and the prompt "Click to start"

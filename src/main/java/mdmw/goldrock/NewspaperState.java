@@ -3,6 +3,8 @@ package mdmw.goldrock;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.audio.AudioData;
+import com.jme3.audio.AudioNode;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.scene.Node;
 
@@ -15,11 +17,14 @@ public class NewspaperState extends AbstractAppState implements ActionListener
     private Main app;
     private Node node;
     private final int killCount;
+    private AudioNode music;
+    private int intermissionNumber;
 
-    public NewspaperState(int killCount)
+    public NewspaperState(int killCount, int intermissionNumber)
     {
         node = new Node("Newspaper State");
         this.killCount = killCount;
+        this.intermissionNumber = intermissionNumber;
     }
 
     @Override
@@ -30,10 +35,16 @@ public class NewspaperState extends AbstractAppState implements ActionListener
         this.app.getGuiNode().attachChild(node);
 
         // Make the newspaper
-        node.attachChild(NewspaperControl.makeNewspaper(getNewspaperForKillCount(killCount), this.app));
+        node.attachChild(NewspaperControl.makeNewspaper(getNewspaper(killCount, intermissionNumber), this.app));
 
         // Register as an event listener
         app.getInputManager().addListener(this, Main.NEXT_SCREEN_MAPPING);
+
+        music = new AudioNode(app.getAssetManager(), "Audio/rag_neutral.wav", AudioData.DataType.Stream);
+        music.setLooping(true);
+        music.setPositional(false);
+        node.attachChild(music);
+        music.play();
     }
 
     @Override
@@ -41,6 +52,8 @@ public class NewspaperState extends AbstractAppState implements ActionListener
     {
         super.cleanup();
         node.removeFromParent();
+
+        music.stop();
 
         // Remove ourselves as a listener
         app.getInputManager().removeListener(this);
@@ -53,25 +66,35 @@ public class NewspaperState extends AbstractAppState implements ActionListener
         {
             // Move on to the next screen
             app.getStateManager().detach(this);
-            app.getStateManager().attach(new ShootDeerState());
+            app.getStateManager().attach(new ShootDeerState(intermissionNumber + 1, killCount));
         }
     }
-
 
     /**
      * Get the path of the newspaper image based on the given kill count
      *
-     * @param killCount The number of deers killed
+     * @param killCount          The number of deers killed
+     * @param intermissionNumber How many hunts we've had
      * @return The path to an image
      */
-    private String getNewspaperForKillCount(int killCount)
+    private String getNewspaper(int killCount, int intermissionNumber)
     {
-        if (killCount < 10)
+        switch (intermissionNumber)
         {
-            return "Sprites/newspaper_1.png";
-        } else
-        {
-            return "Sprites/newspaper_2.png";
+            case 1:
+                if (killCount < 10)
+                {
+                    return "Sprites/newspaper_1.png";
+                } else
+                {
+                    return "Sprites/newspaper_2.png";
+                }
+            case 2:
+                return "Sprites/newspaper_1.png";
+            case 3:
+                return "Sprites/newspaper_1.png";
+            default:
+                throw new IllegalStateException("We only have three intermissions!");
         }
     }
 }
