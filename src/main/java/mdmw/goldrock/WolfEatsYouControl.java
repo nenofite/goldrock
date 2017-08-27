@@ -1,5 +1,7 @@
 package mdmw.goldrock;
 
+import com.jme3.audio.AudioData;
+import com.jme3.audio.AudioNode;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
@@ -11,10 +13,11 @@ public class WolfEatsYouControl extends AbstractControl
 {
     private static final float WIDTH_PORTION = 0.75f;
     private static final float HEIGHT_PORTION = 0.75f;
-    private static final float MOVE_SPEED = 100;
+    private static final float MOVE_SPEED = 1000;
     private float width;
     private float height;
     private Main app;
+    private AudioNode biteSound;
 
     public static Spatial createWolfEatingYou(Main app)
     {
@@ -41,6 +44,23 @@ public class WolfEatsYouControl extends AbstractControl
         this.app = app;
         this.width = width;
         this.height = height;
+
+        biteSound = new AudioNode(app.getAssetManager(), "Audio/mdmw_bite.wav", AudioData.DataType.Buffer);
+        biteSound.setPositional(false);
+        biteSound.setVolume(16);
+    }
+
+    @Override
+    public void setSpatial(Spatial spatial)
+    {
+        super.setSpatial(spatial);
+        if (spatial != null)
+        {
+            biteSound.playInstance();
+        } else
+        {
+
+        }
     }
 
     @Override

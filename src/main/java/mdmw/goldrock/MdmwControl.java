@@ -24,6 +24,7 @@ public class MdmwControl extends AbstractControl implements Shootable
     private AnimationStation animation;
     private AudioNode growlSound;
     private AudioNode snarlSound;
+    private AudioNode howlSound;
     private int lap;
     private float remainingRegenDelay;
     private int health;
@@ -80,6 +81,9 @@ public class MdmwControl extends AbstractControl implements Shootable
         {
             // Make the sound effect nodes
             initAudio();
+
+            // Play the starting howl
+            howlSound.playInstance();
         } else
         {
 
@@ -144,7 +148,6 @@ public class MdmwControl extends AbstractControl implements Shootable
         if (offLeft || offRight && remainingRegenDelay < 0.0001f)
         {
             System.out.println("MDMW completed a lap");
-            // TODO howl and shake and stuff
             playSoundAtLocation(growlSound);
             imgHandle.removeFromParent();
             remainingRegenDelay = BASE_REGEN_DELAY - tpf;
@@ -186,6 +189,7 @@ public class MdmwControl extends AbstractControl implements Shootable
                     float yLoc = getVerticalFractionForLap(lap) * app.getCamera().getHeight();
 
                     getSpatial().setLocalTranslation(xLoc, yLoc, ShootDeerState.Z_DEER);
+                    playSoundAtLocation(snarlSound);
                 }
             }
 
@@ -235,6 +239,10 @@ public class MdmwControl extends AbstractControl implements Shootable
         growlSound = new AudioNode(app.getAssetManager(), "Audio/mdmw_growl.wav", AudioData.DataType.Buffer);
         growlSound.setPositional(true);
         growlSound.setVolume(16);
+
+        howlSound = new AudioNode(app.getAssetManager(), "Audio/mdmw_howl.wav", AudioData.DataType.Buffer);
+        howlSound.setPositional(false);
+        howlSound.setVolume(32);
     }
 
     /**
