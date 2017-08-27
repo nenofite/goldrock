@@ -1,6 +1,5 @@
 package mdmw.goldrock;
 
-
 import com.jme3.font.BitmapText;
 import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.RenderManager;
@@ -16,8 +15,16 @@ public class KillCountControl extends AbstractControl
 {
     private Main app;
     private BitmapText text;
+    private KillCountType type;
 
-    public static Spatial makeKillCount(Main app)
+    public KillCountControl(BitmapText text, Main app, KillCountType type)
+    {
+        this.text = text;
+        this.app = app;
+        this.type = type;
+    }
+
+    public static Spatial makeKillCount(Main app, KillCountType type)
     {
         BitmapText text = new BitmapText(app.getGuiFont());
         text.setSize(app.getGuiFont().getCharSet().getRenderedSize());
@@ -25,16 +32,11 @@ public class KillCountControl extends AbstractControl
 
         Node node = new Node("Kill Count");
         node.attachChild(text);
-        node.addControl(new KillCountControl(text, app));
-        node.setLocalTranslation(app.getCamera().getWidth() / 2f, app.getCamera().getHeight() - text.getHeight() - 10,
-                10);
+        node.addControl(new KillCountControl(text, app, type));
+        float xLocationMod = (type == KillCountType.TOTAL) ? 2f : 1f;
+        node.setLocalTranslation(app.getCamera().getWidth() * xLocationMod / 3f,
+                app.getCamera().getHeight() - text.getHeight() - 10, 10);
         return node;
-    }
-
-    public KillCountControl(BitmapText text, Main app)
-    {
-        this.text = text;
-        this.app = app;
     }
 
     @Override
@@ -45,12 +47,29 @@ public class KillCountControl extends AbstractControl
         {
             return;
         }
-        text.setText("" + shootDeerState.getKillCount());
+        String v = "";
+        switch (type)
+        {
+            case HUNT:
+                v += shootDeerState.getKillCount();
+                break;
+            case TOTAL:
+                v += shootDeerState.getTotalKillCount();
+                break;
+            default:
+                v = "-1";
+                break;
+        }
+        text.setText(v);
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp)
     {
+    }
 
+    enum KillCountType
+    {
+        HUNT, TOTAL
     }
 }
