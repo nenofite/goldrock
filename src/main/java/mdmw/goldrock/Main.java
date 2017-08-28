@@ -42,6 +42,7 @@ public class Main extends SimpleApplication
         flyCam.setEnabled(false);
 
         // Load fonts
+        guiFont = assetManager.loadFont("Fonts/gui.fnt");
         bigFont = assetManager.loadFont("Fonts/big.fnt");
         bigItalicFont = assetManager.loadFont("Fonts/big_italic.fnt");
 
