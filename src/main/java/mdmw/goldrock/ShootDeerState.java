@@ -34,7 +34,7 @@ public class ShootDeerState extends AbstractAppState implements ActionListener
     /**
      * The number of deer to kill in order to see the MDMW ending
      */
-    public static final int MDMW_KILL_COUNT = 10;
+    public static final int MDMW_KILL_COUNT = 70;
     public static final int NUM_ROUNDS = 3;
     public static final int DEER_ROUND_ONE = 13;
     public static final int DEER_ROUND_TWO = 22;
