@@ -50,7 +50,9 @@ public class MdmwControl extends AbstractControl implements Shootable
     private static AnimationStation createDeathAnimation()
     {
         AnimationStation ret = new AnimationStation();
-        ret.addImage("Sprites/mdmw_death.png", 1.0f);
+        ret.addImage("Sprites/explosion_0.png", 0.2f);
+        ret.addImage("Sprites/explosion_1.png", 0.2f);
+        ret.addImage("Sprites/explosion_2.png", 0.4f);
         return ret;
     }
 
