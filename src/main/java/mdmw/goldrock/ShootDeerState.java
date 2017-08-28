@@ -30,6 +30,7 @@ public class ShootDeerState extends AbstractAppState implements ActionListener
      * How long to delay between hunts
      */
     public static final long DELAY_BETWEEN_HUNTS = 5 * 1000 + 300;
+    public static final long DELAY_AFTER_WOLF_DIE = 2 * 1000;
     /**
      * The number of deer to kill in order to see the MDMW ending
      */
@@ -57,6 +58,10 @@ public class ShootDeerState extends AbstractAppState implements ActionListener
      * When we finished the previous hunt and started waiting to start the next, or -1 if we're currently hunting
      */
     private long startedWaitForNextHunt = -1;
+    /**
+     * When the wolf died, or -1 if it hasn't died yet. We use this to know when to switch to the newspaper screen after
+     */
+    private long startedWaitAfterWolfDie = -1;
     /**
      * The timestamp when we started reloading, or -1 if we're not reloading
      */
@@ -221,7 +226,15 @@ public class ShootDeerState extends AbstractAppState implements ActionListener
         super.update(tpf);
         app.getInputManager().setCursorVisible(false);
 
-        if (startedWaitForNextHunt != -1)
+        if (startedWaitAfterWolfDie != -1)
+        {
+            if (System.currentTimeMillis() - startedWaitAfterWolfDie >= DELAY_AFTER_WOLF_DIE)
+            {
+                AppState nextState = new NewspaperState(1);
+                app.getStateManager().detach(this);
+                app.getStateManager().attach(nextState);
+            }
+        } else if (startedWaitForNextHunt != -1)
         {
             if (System.currentTimeMillis() - startedWaitForNextHunt >= DELAY_BETWEEN_HUNTS)
             {
@@ -586,6 +599,7 @@ public class ShootDeerState extends AbstractAppState implements ActionListener
 
     public void notifyWolfDied()
     {
+        startedWaitAfterWolfDie = System.currentTimeMillis();
     }
 
     @Override
@@ -612,5 +626,6 @@ public class ShootDeerState extends AbstractAppState implements ActionListener
                 notifyDeerRemoved();
             }
         });
+        activeDeer = 0;
     }
 }
