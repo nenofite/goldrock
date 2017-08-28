@@ -11,8 +11,8 @@ import com.jme3.ui.Picture;
 
 public class WolfEatsYouControl extends AbstractControl
 {
-    private static final float WIDTH_PORTION = 0.75f;
-    private static final float HEIGHT_PORTION = 0.75f;
+    private static final float WIDTH_PORTION = 0.9f;
+    private static final float HEIGHT_PORTION = 0.9f;
     private static final float MOVE_SPEED = 1000;
     private float width;
     private float height;

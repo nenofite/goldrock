@@ -14,8 +14,8 @@ import com.jme3.ui.Picture;
 
 public class MdmwControl extends AbstractControl implements Shootable
 {
-    public static final int WIDTH = 100;
-    public static final int HEIGHT = 75;
+    public static final int WIDTH = 120;
+    public static final int HEIGHT = 90;
     public static final float BASE_SPEED = 600;
     private static final float BASE_REGEN_DELAY = 3;
     private static final int BASE_HEALTH = 6;
@@ -65,7 +65,7 @@ public class MdmwControl extends AbstractControl implements Shootable
         float mod = (getFacingLeftForLap(0)) ? -1f : 1f;
         float scale = getScaleForLap(1);
 
-        mdmw.scale(mod * scale, 1, 1);
+        mdmw.scale(mod * scale, scale, 1);
         node.attachChild(mdmw);
 
         node.setLocalTranslation(app.getCamera().getWidth(), app.getCamera().getHeight() * getVerticalFractionForLap(0),
@@ -184,7 +184,7 @@ public class MdmwControl extends AbstractControl implements Shootable
                     float scale = getScaleForLap(lap);
                     float posneg = (facingLeft) ? -1 : 1;
 
-                    imgHandle.scale(posneg * scale, 1, 1);
+                    imgHandle.scale(posneg * scale, scale, 1);
 
                     float xLoc = (facingLeft) ? app.getCamera().getWidth() : 0;
                     float yLoc = getVerticalFractionForLap(lap) * app.getCamera().getHeight();
