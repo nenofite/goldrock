@@ -166,7 +166,10 @@ public class CrosshairControl extends AbstractControl implements ActionListener
                 DeerControl deer = Utils.extractControl(result.getGeometry(), DeerControl.class);
                 if (deer != null)
                 {
-                    return deer;
+                    if (deer.getState() != DeerControl.DeerState.DYING)
+                    {
+                        return deer;
+                    }
                 }
             }
         }

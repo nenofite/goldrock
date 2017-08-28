@@ -425,6 +425,11 @@ public class DeerControl extends AbstractControl implements Shootable
         jumpSound.setVolume(10);
     }
 
+    public DeerState getState()
+    {
+        return state;
+    }
+
     enum DeerState
     {
         WALKING, EATING, RUNNING, DYING, JUMPING
