@@ -35,6 +35,7 @@ public class ShootDeerState extends AbstractAppState implements ActionListener
      * The number of deer to kill in order to see the MDMW ending
      */
     public static final int MDMW_KILL_COUNT = 10;
+    public static final int NUM_ROUNDS = 3;
     public static final int DEER_ROUND_ONE = 13;
     public static final int DEER_ROUND_TWO = 22;
     public static final int DEER_ROUND_THREE = 39;
@@ -106,6 +107,9 @@ public class ShootDeerState extends AbstractAppState implements ActionListener
 
         // Add the text background bar
         node.attachChild(makeTextBar());
+
+        // Make the round counter
+        node.attachChild(HuntCountControl.makeHuntCount(this.app));
 
         // Load the audio
         initAudio();
@@ -418,16 +422,13 @@ public class ShootDeerState extends AbstractAppState implements ActionListener
                 if (fracKilled < 0.3f)
                 {
                     titleStr = "Lousy Shot";
-                }
-                else if (fracKilled < 0.7f)
+                } else if (fracKilled < 0.7f)
                 {
                     titleStr = "Beginner Hunter";
-                }
-                else if (fracKilled < 0.999f)
+                } else if (fracKilled < 0.999f)
                 {
                     titleStr = "Talented Rookie";
-                }
-                else
+                } else
                 {
                     titleStr = "Rising Star";
                 }
@@ -437,20 +438,16 @@ public class ShootDeerState extends AbstractAppState implements ActionListener
                 if (fracKilled < 0.3f)
                 {
                     titleStr = "Consistently Lousy Shot";
-                }
-                else if (fracKilled < 0.7f)
+                } else if (fracKilled < 0.7f)
                 {
                     titleStr = "Competent Hunter";
-                }
-                else if (fracKilled < 0.9f)
+                } else if (fracKilled < 0.9f)
                 {
                     titleStr = "Gifted Hunter";
-                }
-                else if (fracKilled < 0.999f)
+                } else if (fracKilled < 0.999f)
                 {
                     titleStr = "Deadeye";
-                }
-                else
+                } else
                 {
                     titleStr = "Inescapable";
                 }
@@ -460,20 +457,16 @@ public class ShootDeerState extends AbstractAppState implements ActionListener
                 if (fracKilled < 0.001f)
                 {
                     titleStr = "Friend of the Deer";
-                }
-                else if (fracKilled < 0.3f)
+                } else if (fracKilled < 0.3f)
                 {
                     titleStr = "Nearly Blind";
-                }
-                else if (fracKilled < 0.7f)
+                } else if (fracKilled < 0.7f)
                 {
                     titleStr = "Seasoned Veteran";
-                }
-                else if (fracKilled < 0.999f)
+                } else if (fracKilled < 0.999f)
                 {
                     titleStr = "Slaughterer of the Masses";
-                }
-                else
+                } else
                 {
                     titleStr = "Oh God Why";
                 }
@@ -627,5 +620,11 @@ public class ShootDeerState extends AbstractAppState implements ActionListener
             }
         });
         activeDeer = 0;
+    }
+
+
+    public int getRoundNumber()
+    {
+        return huntNumber;
     }
 }
