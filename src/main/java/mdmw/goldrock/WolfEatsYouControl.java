@@ -17,7 +17,9 @@ public class WolfEatsYouControl extends AbstractControl
     private static final float WIDTH_PORTION = 0.9f;
     private static final float HEIGHT_PORTION = 0.9f;
     private static final long ENTRY_DURATION = 500;
+    private static final long DELAY_AFTER_EAT = 3 * 1000;
     private long startedEntry;
+    private long startedWaitingToFinish;
     private Main app;
     private AudioNode biteSound;
 
@@ -70,10 +72,22 @@ public class WolfEatsYouControl extends AbstractControl
 
         if (frac >= 1)
         {
-            // Reset rotation
-            getSpatial().setLocalRotation(Quaternion.IDENTITY);
-            // Set to full scale
-            getSpatial().setLocalScale(1);
+            if (startedWaitingToFinish != -1)
+            {
+                if (System.currentTimeMillis() - startedWaitingToFinish >= DELAY_AFTER_EAT)
+                {
+                    app.getStateManager().detach(app.getStateManager().getState(ShootDeerState.class));
+                    app.getStateManager().attach(new PlayAgainState());
+                }
+            } else
+            {
+                // Reset rotation
+                getSpatial().setLocalRotation(Quaternion.IDENTITY);
+                // Set to full scale
+                getSpatial().setLocalScale(1);
+
+                startedWaitingToFinish = System.currentTimeMillis();
+            }
         } else
         {
             // Spin
